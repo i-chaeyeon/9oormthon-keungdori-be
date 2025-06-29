@@ -1,0 +1,28 @@
+# Gradle
+.gradle/
+build/
+!gradle/wrapper/gradle-wrapper.jar
+
+# IntelliJ
+.idea/
+*.iml
+*.iws
+out/
+
+# macOS
+.DS_Store
+
+# Logs
+*.log
+
+# Environment variables
+.env
+
+# Application secret 설정
+src/main/resources/application-secret.yml
+
+# Java
+*.class
+
+# 테스트 리포트 등
+test-output/
