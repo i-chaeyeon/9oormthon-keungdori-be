@@ -1,6 +1,6 @@
 package goormthonuniv.kengdori.backend.controller;
 
-import goormthonuniv.kengdori.backend.config.KakaoAuthConfig;
+import goormthonuniv.kengdori.backend.service.KakaoAuthService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -9,19 +9,30 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 @RequiredArgsConstructor
 @Controller
-@RequestMapping("/login")
+@RequestMapping("/api/auth")
 public class KakaoAuthController {
 
-    private final KakaoAuthConfig kakaoAuthConfig;
+    private final KakaoAuthService kakaoAuthService;
 
-    @GetMapping("/page")
+    @GetMapping("/kakao-url")
     public String loginPage(Model model){
-        String location = "https://kauth.kakao.com/oauth/authorize?response_type=code&client_id="
-                +kakaoAuthConfig.getClientId()
-                +"&redirect_uri="
-                +kakaoAuthConfig.getRedirectUri();
-        model.addAttribute("location", location);
-
-        return "login";
+        return kakaoAuthService.getKakaoLoginUrl();
     }
 }
+
+
+//백엔드 테스트용
+//@RequiredArgsConstructor
+//@Controller
+//@RequestMapping("/login")
+//public class KakaoAuthController {
+//
+//    private final KakaoAuthService kakaoAuthService;
+//
+//    @GetMapping("/kakao")
+//    public String loginPage(Model model){
+//        String location = kakaoAuthService.getKakaoLoginUrl();
+//        model.addAttribute("location", location);
+//        return "login";
+//    }
+//}
