@@ -8,7 +8,7 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class KakaoAuthService {
 
-    private KakaoAuthConfig kakaoAuthConfig;
+    private final KakaoAuthConfig kakaoAuthConfig;
 
     public String getKakaoLoginUrl(){
         return "https://kauth.kakao.com/oauth/authorize?response_type=code&client_id="
