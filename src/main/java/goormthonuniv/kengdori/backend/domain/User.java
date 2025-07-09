@@ -17,7 +17,7 @@ public class User {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String kakaoId; // 카카오 로그인 시 유저 정보
+    private Long kakaoId; // 카카오 로그인 시 유저 정보
     private String userName; // 보여지는 이름
 
     @Column(unique = true)

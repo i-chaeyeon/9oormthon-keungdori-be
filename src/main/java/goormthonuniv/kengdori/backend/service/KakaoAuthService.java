@@ -1,5 +1,7 @@
 package goormthonuniv.kengdori.backend.service;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import goormthonuniv.kengdori.backend.DTO.KakaoTokenResponseDTO;
 import goormthonuniv.kengdori.backend.config.KakaoAuthConfig;
 import lombok.RequiredArgsConstructor;
@@ -35,5 +37,23 @@ public class KakaoAuthService {
 
         // 로그인에 필요한 토큰만 리턴
         return response.getAccessToken();
+    }
+
+    public Long getKakaoId(String token){
+        return WebClient.create().get()
+                .uri("https://kapi.kakao.com/v2/user/me")
+                .header(HttpHeaders.AUTHORIZATION, "Bearer " + token)
+                .retrieve()
+                .bodyToMono(String.class)
+                .map(json -> {
+                    try {
+                        ObjectMapper mapper = new ObjectMapper();
+                        JsonNode root = mapper.readTree(json);
+                        return root.get("id").asLong();
+                    } catch (Exception e) {
+                        throw new RuntimeException("Fail", e);
+                    }
+                })
+                .block();
     }
 }
