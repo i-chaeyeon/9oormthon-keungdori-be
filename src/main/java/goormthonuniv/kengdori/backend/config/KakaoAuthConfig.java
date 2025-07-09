@@ -12,4 +12,6 @@ import org.springframework.context.annotation.Configuration;
 public class KakaoAuthConfig {
     private String clientId;
     private String redirectUri;
+    private String KAKAO_TOKEN_URL_HOST = "https://kauth.kakao.com";
+    private String KAKAO_USER_URL_HOST = "https://kapi.kakao.com";
 }
