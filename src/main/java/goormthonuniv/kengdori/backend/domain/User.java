@@ -24,8 +24,10 @@ public class User {
     private String userId; // 검색 시 사용할 아이디 (중복 불가)
 
     private boolean search; // 검색 허용/거부
-    private String keng_color; // 친구에게 보여지는 마커 색상
+    private String kengColor; // 친구에게 보여지는 마커 색상
     private boolean subscription; // 구독 여부
+
+    @Column(columnDefinition = "TEXT")
     private String profileImage; // 본인 프로필 사진
     private LocalDateTime createdAt;
 
