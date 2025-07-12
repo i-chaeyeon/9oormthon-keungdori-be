@@ -35,4 +35,10 @@ public class UserController {
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
+    @GetMapping("/me")
+    public ResponseEntity<UserResponseDTO> getMyInfo(HttpSession session){
+        UserResponseDTO user = (UserResponseDTO) session.getAttribute("login-user");
+        return ResponseEntity.ok(user);
+    }
+
 }
