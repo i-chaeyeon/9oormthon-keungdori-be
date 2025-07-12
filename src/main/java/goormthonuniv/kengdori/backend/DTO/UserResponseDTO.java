@@ -8,6 +8,8 @@ import lombok.RequiredArgsConstructor;
 public class UserResponseDTO {
     private final Long id;
     private final String userName;
+    private final String userId;
+    private final Boolean search;
     private final String kengColor;
     private final String profileImage;
 }

@@ -16,7 +16,7 @@ public class UserServiceImpl implements UserService{
 
     @Override
     @Transactional
-    public UserResponseDTO createUser(UserRequestDTO userRequestDTO) {
+    public UserResponseDTO createUser(UserRequestDTO userRequestDTO, Long kakaoId) {
         User user = User.builder()
                 .userName(userRequestDTO.getUserName())
                 .userId(userRequestDTO.getUserId())
@@ -24,11 +24,14 @@ public class UserServiceImpl implements UserService{
                 .kengColor(userRequestDTO.getKengColor())
                 .profileImage(userRequestDTO.getProfileImage())
                 .subscription(false)
-                .build(); // TODO: 세션에서 kakaoId
+                .kakaoId(kakaoId)
+                .build();
         User savedUser = userRepository.save(user);
         return new UserResponseDTO(
                 savedUser.getId(),
                 savedUser.getUserName(),
+                savedUser.getUserId(),
+                savedUser.isSearch(),
                 savedUser.getKengColor(),
                 savedUser.getProfileImage()
         );
@@ -57,6 +60,20 @@ public class UserServiceImpl implements UserService{
     @Override
     public UserResponseDTO getMyProfile() {
         return null;
+    }
+
+    @Override
+    public UserResponseDTO findUserDtoByKakaoId(Long kakaoId){
+        User user = userRepository.findByKakaoId(kakaoId).orElseThrow(() -> new RuntimeException("User not found"));
+
+        return new UserResponseDTO(
+                user.getId(),
+                user.getUserName(),
+                user.getUserId(),
+                user.isSearch(),
+                user.getKengColor(),
+                user.getProfileImage()
+        );
     }
 
     @Override

@@ -6,7 +6,7 @@ import goormthonuniv.kengdori.backend.DTO.UserResponseDTO;
 public interface UserService {
 
     // C
-    UserResponseDTO createUser(UserRequestDTO userRequestDTO);
+    UserResponseDTO createUser(UserRequestDTO userRequestDTO, Long kakaoId);
 
     // R
     boolean existsByKakaoId(Long kakaoId);
@@ -14,6 +14,7 @@ public interface UserService {
     boolean canBeSearched();
     boolean isSubscribed();
     UserResponseDTO getMyProfile();
+    UserResponseDTO findUserDtoByKakaoId(Long kakaoId);
 
     // U
     UserResponseDTO updateUser(UserRequestDTO userRequestDTO);

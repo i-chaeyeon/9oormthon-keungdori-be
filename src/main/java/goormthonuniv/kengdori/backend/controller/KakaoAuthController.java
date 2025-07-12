@@ -1,7 +1,9 @@
 package goormthonuniv.kengdori.backend.controller;
 
+import goormthonuniv.kengdori.backend.DTO.UserResponseDTO;
 import goormthonuniv.kengdori.backend.service.KakaoAuthService;
 import goormthonuniv.kengdori.backend.service.UserServiceImpl;
+import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
@@ -25,19 +27,20 @@ public class KakaoAuthController {
 
 
     @GetMapping("/kakao/callback")
-    public String callback(@RequestParam String code){
+    public String callback(@RequestParam String code, HttpSession session){
 
         String token = kakaoAuthService.getKakaoAccessToken(code);
         Long kakaoId = kakaoAuthService.getKakaoId(token);
         boolean exists = userService.existsByKakaoId(kakaoId);
 
-        log.info("카카오 로그인 시도 - KakaoId: {}", kakaoId);
-
         if (exists) {
             // 이미 가입 → 홈으로
+            UserResponseDTO userResponseDTO = userService.findUserDtoByKakaoId(kakaoId);
+            session.setAttribute("login-user", userResponseDTO);
             return "redirect:/home";
         } else {
             // 신규 → 회원가입 페이지로
+            session.setAttribute("tempKakaoId", kakaoId);
             return "redirect:/signup";
         }
     }

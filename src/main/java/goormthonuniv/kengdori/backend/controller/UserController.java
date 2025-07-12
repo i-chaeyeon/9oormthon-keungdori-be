@@ -3,6 +3,7 @@ package goormthonuniv.kengdori.backend.controller;
 import goormthonuniv.kengdori.backend.DTO.UserRequestDTO;
 import goormthonuniv.kengdori.backend.DTO.UserResponseDTO;
 import goormthonuniv.kengdori.backend.service.UserServiceImpl;
+import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -26,8 +27,12 @@ public class UserController {
     }
 
     @PostMapping("/signup")
-    public ResponseEntity<UserResponseDTO> signUp(@RequestBody UserRequestDTO userRequestDTO){
-        UserResponseDTO response = userService.createUser(userRequestDTO);
+    public ResponseEntity<UserResponseDTO> signUp(@RequestBody UserRequestDTO userRequestDTO, HttpSession session){
+        Long kakaoId = (Long) session.getAttribute("tempKakaoId");
+
+        UserResponseDTO response = userService.createUser(userRequestDTO, kakaoId);
+        session.setAttribute("user", response);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
+
 }
