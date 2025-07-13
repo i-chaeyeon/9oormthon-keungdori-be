@@ -2,6 +2,7 @@ package goormthonuniv.kengdori.backend.service;
 
 import goormthonuniv.kengdori.backend.DTO.UserRequestDTO;
 import goormthonuniv.kengdori.backend.DTO.UserResponseDTO;
+import goormthonuniv.kengdori.backend.DTO.UserUpdateRequestDTO;
 
 public interface UserService {
 
@@ -17,7 +18,7 @@ public interface UserService {
     UserResponseDTO findUserDtoByKakaoId(Long kakaoId);
 
     // U
-    UserResponseDTO updateUser(UserRequestDTO userRequestDTO);
+    UserResponseDTO updateUser(Long id, UserUpdateRequestDTO userUpdateRequestDTO);
 
     // D
     void deleteUser();

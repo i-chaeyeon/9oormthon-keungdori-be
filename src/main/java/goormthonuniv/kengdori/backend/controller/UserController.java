@@ -2,6 +2,7 @@ package goormthonuniv.kengdori.backend.controller;
 
 import goormthonuniv.kengdori.backend.DTO.UserRequestDTO;
 import goormthonuniv.kengdori.backend.DTO.UserResponseDTO;
+import goormthonuniv.kengdori.backend.DTO.UserUpdateRequestDTO;
 import goormthonuniv.kengdori.backend.service.UserServiceImpl;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
@@ -41,4 +42,15 @@ public class UserController {
         return ResponseEntity.ok(user);
     }
 
+    @PatchMapping("/me")
+    public ResponseEntity<UserResponseDTO> editMyInfo(
+            @RequestBody UserUpdateRequestDTO updateRequestDTO,
+            HttpSession session
+    ){
+        UserResponseDTO user = (UserResponseDTO) session.getAttribute("login-user");
+        Long id = user.getId();
+        UserResponseDTO updatedUser = userService.updateUser(id, updateRequestDTO);
+        session.setAttribute("login-user", updatedUser);
+        return ResponseEntity.ok(updatedUser);
+    }
 }

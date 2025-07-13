@@ -2,11 +2,14 @@ package goormthonuniv.kengdori.backend.service;
 
 import goormthonuniv.kengdori.backend.DTO.UserRequestDTO;
 import goormthonuniv.kengdori.backend.DTO.UserResponseDTO;
+import goormthonuniv.kengdori.backend.DTO.UserUpdateRequestDTO;
 import goormthonuniv.kengdori.backend.domain.User;
 import goormthonuniv.kengdori.backend.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.Optional;
 
 @RequiredArgsConstructor
 @Service
@@ -53,8 +56,26 @@ public class UserServiceImpl implements UserService{
     }
 
     @Override
-    public UserResponseDTO updateUser(UserRequestDTO userRequestDTO) {
-        return null;
+    @Transactional
+    public UserResponseDTO updateUser(Long id, UserUpdateRequestDTO userUpdateRequestDTO) {
+        User user = userRepository.findById(id).orElseThrow(() -> new RuntimeException("User not found"));
+        if(userUpdateRequestDTO.getUserName() != null) {
+            user.setUserName(userUpdateRequestDTO.getUserName());
+        }
+        if(userUpdateRequestDTO.getUserId() != null){
+            user.setUserId(userUpdateRequestDTO.getUserId());
+        }
+        if(userUpdateRequestDTO.getSearch() != null){
+            user.setSearch(userUpdateRequestDTO.getSearch());
+        }
+        if(userUpdateRequestDTO.getKengColor() != null){
+            user.setKengColor(userUpdateRequestDTO.getKengColor());
+        }
+        if(userUpdateRequestDTO.getProfileImage() != null){
+            user.setProfileImage(userUpdateRequestDTO.getProfileImage());
+        }
+
+        return UserResponseDTO.from(user);
     }
 
     @Override
