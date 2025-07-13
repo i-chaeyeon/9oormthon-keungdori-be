@@ -6,8 +6,11 @@ import goormthonuniv.kengdori.backend.service.UserServiceImpl;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
@@ -43,5 +46,20 @@ public class KakaoAuthController {
             session.setAttribute("tempKakaoId", kakaoId);
             return "redirect:/signup";
         }
+    }
+
+    @PostMapping("/logout")
+    public ResponseEntity<?> logout(HttpSession session){
+        Object user = session.getAttribute("login-user");
+
+        if (user != null) {
+            log.info("로그아웃: 세션 사용자 = {}", user);
+            session.invalidate();
+            return ResponseEntity.ok().build();
+        } else {
+            log.info("로그아웃 실패: 세션에 사용자 정보 없음");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+
     }
 }
