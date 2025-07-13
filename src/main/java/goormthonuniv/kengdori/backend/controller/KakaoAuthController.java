@@ -50,7 +50,7 @@ public class KakaoAuthController {
 
     @PostMapping("/logout")
     public ResponseEntity<?> logout(HttpSession session){
-        Object user = session.getAttribute("login-user");
+        UserResponseDTO user = (UserResponseDTO) session.getAttribute("login-user");
 
         if (user != null) {
             log.info("로그아웃: 세션 사용자 = {}", user);
@@ -60,6 +60,5 @@ public class KakaoAuthController {
             log.info("로그아웃 실패: 세션에 사용자 정보 없음");
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
-
     }
 }

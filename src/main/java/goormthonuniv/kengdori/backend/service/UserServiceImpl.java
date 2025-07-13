@@ -79,7 +79,10 @@ public class UserServiceImpl implements UserService{
     }
 
     @Override
-    public void deleteUser() {
+    public void deleteUser(Long id) {
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 유저"));
 
+        userRepository.delete(user);
     }
 }
