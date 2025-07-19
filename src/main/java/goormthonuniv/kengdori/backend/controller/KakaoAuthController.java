@@ -14,6 +14,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import java.util.Map;
+
 @Slf4j
 @RequiredArgsConstructor
 @Controller
@@ -24,13 +26,14 @@ public class KakaoAuthController {
     private final UserServiceImpl userService;
 
     @GetMapping("/kakao-url")
-    public String passUrl(){
-        return "redirect:" + kakaoAuthService.getKakaoLoginUrl();
+    public ResponseEntity<?> passUrl(){
+        return ResponseEntity.ok(Map.of(
+                "url", kakaoAuthService.getKakaoLoginUrl()
+        ));
     }
 
-
     @GetMapping("/kakao/callback")
-    public String callback(@RequestParam String code, HttpSession session){
+    public ResponseEntity<?> callback(@RequestParam String code){
 
         String token = kakaoAuthService.getKakaoAccessToken(code);
         Long kakaoId = kakaoAuthService.getKakaoId(token);
@@ -38,13 +41,14 @@ public class KakaoAuthController {
 
         if (exists) {
             // 이미 가입 → 홈으로
-            UserResponseDTO userResponseDTO = userService.findUserDtoByKakaoId(kakaoId);
-            session.setAttribute("login-user", userResponseDTO);
-            return "redirect:/home";
+            return ResponseEntity.ok(Map.of(
+                    "new_user", "false"
+            ));
         } else {
             // 신규 → 회원가입 페이지로
-            session.setAttribute("tempKakaoId", kakaoId);
-            return "redirect:/signup";
+            return ResponseEntity.ok(Map.of(
+                    "new_user", "true"
+            ));
         }
     }
 
