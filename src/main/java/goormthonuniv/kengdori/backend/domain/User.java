@@ -32,6 +32,8 @@ public class User {
     private String profileImage; // 본인 프로필 사진
     private LocalDateTime createdAt;
 
+    private String refreshToken;
+
     @PrePersist
     protected void onCreate(){
         this.createdAt = LocalDateTime.now();

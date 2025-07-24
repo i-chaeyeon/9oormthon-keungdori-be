@@ -2,13 +2,11 @@ package goormthonuniv.kengdori.backend.controller;
 
 import goormthonuniv.kengdori.backend.DTO.UserRequestDTO;
 import goormthonuniv.kengdori.backend.DTO.UserResponseDTO;
-import goormthonuniv.kengdori.backend.DTO.UserUpdateRequestDTO;
+import goormthonuniv.kengdori.backend.JWT.JwtUtil;
 import goormthonuniv.kengdori.backend.domain.User;
 import goormthonuniv.kengdori.backend.service.UserServiceImpl;
-import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
@@ -22,6 +20,7 @@ import java.util.Map;
 public class UserController {
 
     private final UserServiceImpl userService;
+    private final JwtUtil jwtUtil;
 
     @GetMapping("/check-id")
     public ResponseEntity<?> checkUserId(@RequestParam String value){
@@ -30,45 +29,44 @@ public class UserController {
         ));
     }
 
-    @PostMapping("/signup")
-    public ResponseEntity<UserResponseDTO> signUp(@RequestBody UserRequestDTO userRequestDTO, HttpSession session){
-        Long kakaoId = (Long) session.getAttribute("tempKakaoId");
+    @PatchMapping("/signup")
+    public ResponseEntity<UserResponseDTO> signUp(
+            @RequestBody UserRequestDTO userRequestDTO,
+            @RequestHeader("Authorization") String authHeader){
 
-        UserResponseDTO response = userService.createUser(userRequestDTO, kakaoId);
-        session.setAttribute("login-user", response);
-        return ResponseEntity.status(HttpStatus.CREATED).body(response);
+        String accessToken = authHeader.replace("Bearer ", "");
+        Long kakaoId = jwtUtil.getClaimsToken(accessToken).get("kakaoId", Long.class);
+
+        User user = userService.findUserByKakaoId(kakaoId);
+        UserResponseDTO responseDTO = userService.updateUser(user.getId(), userRequestDTO, accessToken);
+        return ResponseEntity.ok(responseDTO);
     }
 
     @GetMapping("/me")
-    public ResponseEntity<UserResponseDTO> getMyInfo(HttpSession session){
-        UserResponseDTO user = (UserResponseDTO) session.getAttribute("login-user");
+    public ResponseEntity<UserResponseDTO> getMyInfo(@RequestHeader("Authorization") String authHeader){
+        String accessToken = authHeader.replace("Bearer ", "");
+        Long kakaoId = jwtUtil.getClaimsToken(accessToken).get("kakaoId", Long.class);
+        UserResponseDTO user = UserResponseDTO.from(userService.findUserByKakaoId(kakaoId), accessToken);
         return ResponseEntity.ok(user);
     }
 
     @PatchMapping("/me")
     public ResponseEntity<UserResponseDTO> editMyInfo(
-            @RequestBody UserUpdateRequestDTO updateRequestDTO,
-            HttpSession session
+            @RequestHeader("Authorization") String authHeader,
+            @RequestBody UserRequestDTO userRequestDTO
     ){
-        UserResponseDTO user = (UserResponseDTO) session.getAttribute("login-user");
-        Long id = user.getId();
-        UserResponseDTO updatedUser = userService.updateUser(id, updateRequestDTO);
-        session.setAttribute("login-user", updatedUser);
+        String accessToken = authHeader.replace("Bearer ", "");
+        Long kakaoId = jwtUtil.getClaimsToken(accessToken).get("kakaoId", Long.class);
+        UserResponseDTO updatedUser = userService.updateUser(userService.findUserByKakaoId(kakaoId).getId(), userRequestDTO, accessToken);
         return ResponseEntity.ok(updatedUser);
     }
 
     @DeleteMapping("/me")
-    public ResponseEntity<?> deleteUser(HttpSession session){
-        UserResponseDTO user = (UserResponseDTO) session.getAttribute("login-user");
-
-        if (user != null) {
-            log.info("회원 탈퇴: 사용자 = {}", user.getId());
-            userService.deleteUser(user.getId());
-            session.invalidate();
-            return ResponseEntity.ok().build();
-        } else {
-            log.info("탈퇴 실패: 세션에 사용자 정보 없음");
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
-        }
+    public ResponseEntity<?> deleteUser( @RequestHeader("Authorization") String authHeader){
+        String accessToken = authHeader.replace("Bearer ", "");
+        Long kakaoId = jwtUtil.getClaimsToken(accessToken).get("kakaoId", Long.class);
+        User user = userService.findUserByKakaoId(kakaoId);
+        userService.deleteUser(user.getId());
+        return ResponseEntity.ok().build();
     }
 }
