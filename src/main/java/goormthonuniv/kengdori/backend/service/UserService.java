@@ -22,4 +22,5 @@ public interface UserService {
 
     // D
     void deleteUser(Long id);
+    void deleteRefreshToken(Long kakaoId);
 }

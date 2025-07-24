@@ -74,16 +74,20 @@ public class UserServiceImpl implements UserService{
 
     @Override
     public User findUserByKakaoId(Long kakaoId){
-
         return userRepository.findByKakaoId(kakaoId).orElseThrow(() -> new RuntimeException("User not found"));
     }
 
     @Override
     @Transactional
     public void deleteUser(Long id) {
-        User user = userRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 유저"));
-
+        User user = userRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("User not found"));
         userRepository.delete(user);
+    }
+
+    @Override
+    @Transactional
+    public void deleteRefreshToken(Long kakaoId){
+        User user = userRepository.findByKakaoId(kakaoId).orElseThrow(() -> new RuntimeException("User not found"));
+        user.setRefreshToken(null);
     }
 }

@@ -2,7 +2,6 @@ package goormthonuniv.kengdori.backend.controller;
 
 import goormthonuniv.kengdori.backend.DTO.KakaoCallbackDTO;
 import goormthonuniv.kengdori.backend.JWT.JwtUtil;
-import goormthonuniv.kengdori.backend.domain.User;
 import goormthonuniv.kengdori.backend.service.KakaoAuthService;
 import goormthonuniv.kengdori.backend.service.UserServiceImpl;
 import lombok.RequiredArgsConstructor;
@@ -61,17 +60,31 @@ public class KakaoAuthController {
     }
 
     @PostMapping("/logout")
-    public ResponseEntity<?> logout(@RequestHeader("Authorization") String authHeader){
-        String accessToken = authHeader.replace("Bearer ", "");
-        Long kakaoId = jwtUtil.getClaimsToken(accessToken).get("kakaoId", Long.class);
-        User user = userService.findUserByKakaoId(kakaoId);
-        return ResponseEntity.ok().build();
+    public ResponseEntity<?> logout(@CookieValue("refreshToken") String refreshToken) {
+        if (!jwtUtil.isValidRefreshToken(refreshToken)) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("error", "유효하지 않은 토큰"));
+        }
+
+        Long kakaoId = jwtUtil.getClaimsToken(refreshToken).get("kakaoId", Long.class);
+        userService.deleteRefreshToken(kakaoId);
+
+        ResponseCookie deleteCookie = ResponseCookie.from("refreshToken", "")
+                .httpOnly(true)
+                .secure(true)
+                .path("/")
+                .maxAge(0)
+                .sameSite("Strict")
+                .build();
+
+        return ResponseEntity.ok()
+                .header(HttpHeaders.SET_COOKIE, deleteCookie.toString())
+                .body(Map.of("message", "로그아웃 성공"));
     }
 
     @PostMapping("/reissue")
     public ResponseEntity<?> reissue(@CookieValue("refreshToken") String refreshToken) {
         if (!jwtUtil.isValidRefreshToken(refreshToken)) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("error", "Refresh token expired"));
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("error", "유효하지 않은 토큰"));
         }
 
         Long kakaoId = jwtUtil.getClaimsToken(refreshToken).get("kakaoId", Long.class);
