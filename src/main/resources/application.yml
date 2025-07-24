@@ -3,17 +3,26 @@ spring:
     import: optional:classpath:application-secret.yml
 
   datasource:
-    url: jdbc:postgresql://aws-0-ap-northeast-2.pooler.supabase.com:6543/postgres
+    url: jdbc:postgresql://aws-0-ap-northeast-2.pooler.supabase.com:5432/postgres?prepareThreshold=0
     username: postgres.lncoqvbkyqwzdgqwcnzl
     driver-class-name: org.postgresql.Driver
+    hikari:
+      maximum-pool-size: 1
+      minimum-idle: 1
+      idle-timeout: 10000
+      max-lifetime: 20000
 
   jpa:
     hibernate:
       ddl-auto: update # create / validate로 수정 가능
-    show-sql: true
+    show-sql: false
     properties:
       hibernate:
         format_sql: true
 
 kakao:
   redirect_uri: http://localhost:8080/callback
+
+jwt:
+  access-token-expiration: 86400000 # 1일
+  refresh-token-expiration: 1209600000 # 14일
