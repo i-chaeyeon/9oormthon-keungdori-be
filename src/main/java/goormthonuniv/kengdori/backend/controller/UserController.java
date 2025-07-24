@@ -67,6 +67,6 @@ public class UserController {
         Long kakaoId = jwtUtil.getClaimsToken(accessToken).get("kakaoId", Long.class);
         User user = userService.findUserByKakaoId(kakaoId);
         userService.deleteUser(user.getId());
-        return ResponseEntity.ok().build();
+        return ResponseEntity.ok(Map.of("message", "회원 탈퇴 성공"));
     }
 }
