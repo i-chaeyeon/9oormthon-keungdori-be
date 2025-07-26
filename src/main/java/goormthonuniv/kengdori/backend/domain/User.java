@@ -22,7 +22,7 @@ public class User {
     private String userName; // 보여지는 이름
 
     @Column(unique = true)
-    private String userId; // 검색 시 사용할 아이디 (중복 불가)
+    private String searchId; // 검색 시 사용할 아이디 (중복 불가)
 
     private boolean search; // 검색 허용/거부
     private String kengColor; // 친구에게 보여지는 마커 색상

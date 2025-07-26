@@ -25,7 +25,7 @@ public class UserController {
     @GetMapping("/check-id")
     public ResponseEntity<?> checkUserId(@RequestParam String value){
         return ResponseEntity.ok(Map.of(
-                "available", !userService.existsByUserId(value)
+                "available", !userService.existsBySearchId(value)
         ));
     }
 

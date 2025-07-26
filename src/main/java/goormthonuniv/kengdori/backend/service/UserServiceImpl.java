@@ -30,8 +30,8 @@ public class UserServiceImpl implements UserService{
     }
 
     @Override
-    public boolean existsByUserId(String userId) {
-        return userRepository.existsByUserId(userId);
+    public boolean existsBySearchId(String searchId) {
+        return userRepository.existsBySearchId(searchId);
     }
 
     @Override
@@ -56,8 +56,8 @@ public class UserServiceImpl implements UserService{
         if(userRequestDTO.getUserName() != null) {
             user.setUserName(userRequestDTO.getUserName());
         }
-        if(userRequestDTO.getUserId() != null){
-            user.setUserId(userRequestDTO.getUserId());
+        if(userRequestDTO.getSearchId() != null){
+            user.setSearchId(userRequestDTO.getSearchId());
         }
         if(userRequestDTO.getSearch() != null){
             user.setSearch(userRequestDTO.getSearch());

@@ -11,7 +11,7 @@ public interface UserService {
 
     // R
     boolean existsByKakaoId(Long kakaoId);
-    boolean existsByUserId(String userId);
+    boolean existsBySearchId(String searchId);
     boolean canBeSearched();
     boolean isSubscribed();
     UserResponseDTO getMyProfile();
