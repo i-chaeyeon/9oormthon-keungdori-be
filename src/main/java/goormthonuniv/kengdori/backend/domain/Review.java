@@ -12,7 +12,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor(access= AccessLevel.PROTECTED)
 @Getter
 @Setter
-public class Memo {
+public class Review {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -31,6 +31,7 @@ public class Memo {
     @Column(columnDefinition = "TEXT")
     private String memo;
     private Double rating;
+    private String imageUrl;
 
 
     @PrePersist

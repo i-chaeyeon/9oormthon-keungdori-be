@@ -6,10 +6,12 @@ import goormthonuniv.kengdori.backend.domain.User;
 import goormthonuniv.kengdori.backend.domain.UserHashtag;
 import goormthonuniv.kengdori.backend.repository.UserHashtagRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 @RequiredArgsConstructor
 @Service
+@Slf4j
 public class HashtagService {
 
     private final UserHashtagRepository userHashtagRepository;
@@ -59,4 +61,13 @@ public class HashtagService {
                 .build();
     }
 
+    public UserHashtag findUserHashtag(User user, String hashtag){
+        log.info("해시태그 조회 시도 - 사용자: {}, 해시태그: {}", user.getId(), hashtag);
+
+        return userHashtagRepository.findByUserAndHashtag(user, hashtag)
+                .orElseThrow(() -> {
+                    log.warn("존재하지 않는 해시태그 요청 - 사용자: {}, 해시태그: {}", user.getId(), hashtag);
+                    return new RuntimeException("등록되지 않은 해시태그");
+                });
+    }
 }

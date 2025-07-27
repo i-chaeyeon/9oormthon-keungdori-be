@@ -16,7 +16,7 @@ public class Place {
     private Long id;
 
     private String name; // 장소명
-    private String kakao_id; // 카카오 API에서 장소의 id
-    private String x_coordinate; // x 좌표
-    private String y_coordinate; // y 좌표
+    private String kakaoId; // 카카오 API에서 장소의 id
+    private String xCoordinate; // x 좌표
+    private String yCoordinate; // y 좌표
 }
