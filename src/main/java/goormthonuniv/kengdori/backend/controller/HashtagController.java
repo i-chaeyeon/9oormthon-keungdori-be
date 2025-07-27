@@ -21,14 +21,18 @@ public class HashtagController {
     private final HashtagService hashtagService;
     private final UserServiceImpl userService;
 
+    private User findUser(String authHeader){
+        String accessToken = authHeader.replace("Bearer ", "");
+        Long kakaoId = jwtUtil.getClaimsToken(accessToken).get("kakaoId", Long.class);
+        return userService.findUserByKakaoId(kakaoId);
+    }
+
     @PostMapping("")
     public ResponseEntity<HashtagResponseDTO> findOrCreate(
             @RequestHeader("Authorization") String authHeader,
             @RequestBody HashtagRequestDTO hashtagRequestDTO
     ){
-        String accessToken = authHeader.replace("Bearer ", "");
-        Long kakaoId = jwtUtil.getClaimsToken(accessToken).get("kakaoId", Long.class);
-        User user = userService.findUserByKakaoId(kakaoId);
+        User user = findUser(authHeader);
 
         HashtagResponseDTO response = hashtagService.findOrCreateUserHashtag(user, hashtagRequestDTO.hashtag);
         if("exists".equals(response.status)){
@@ -36,5 +40,16 @@ public class HashtagController {
         } else {
             return ResponseEntity.status(201).body(response);
         }
+    }
+
+    @PatchMapping("")
+    public ResponseEntity<HashtagResponseDTO> changeColor(
+            @RequestHeader("Authorization") String authHeader,
+            @RequestBody HashtagRequestDTO hashtagRequestDTO
+    ){
+        User user = findUser(authHeader);
+
+        HashtagResponseDTO response = hashtagService.changeColor(user, hashtagRequestDTO);
+        return ResponseEntity.ok().body(response);
     }
 }

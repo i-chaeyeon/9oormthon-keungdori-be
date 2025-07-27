@@ -1,5 +1,6 @@
 package goormthonuniv.kengdori.backend.service;
 
+import goormthonuniv.kengdori.backend.DTO.HashtagRequestDTO;
 import goormthonuniv.kengdori.backend.DTO.HashtagResponseDTO;
 import goormthonuniv.kengdori.backend.domain.User;
 import goormthonuniv.kengdori.backend.domain.UserHashtag;
@@ -41,17 +42,21 @@ public class HashtagService {
                             .status("created")
                             .build();
                 });
-//        UserHashtag userHashtag = userHashtagRepository.findByUserAndHashtag(user, hashtag)
-//                .orElseGet(() -> createUserHashtag(user, hashtag));
-//
-//        String status = userHashtag.getId() == null ? "created" : "exists";
-//
-//        return HashtagResponseDTO.builder()
-//                .hashtag(userHashtag.getHashtag())
-//                .color(userHashtag.getColor())
-//                .status(status)
-//                .build();
     }
 
+    public HashtagResponseDTO changeColor(User user, HashtagRequestDTO hashtagRequestDTO){
+
+        UserHashtag userHashtag = userHashtagRepository.findByUserAndHashtag(user, hashtagRequestDTO.hashtag)
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 해시태그"));
+
+        userHashtag.setColor(hashtagRequestDTO.color);
+        userHashtagRepository.save(userHashtag);
+
+        return HashtagResponseDTO.builder()
+                .hashtag(userHashtag.getHashtag())
+                .color(userHashtag.getColor())
+                .status("updated")
+                .build();
+    }
 
 }
