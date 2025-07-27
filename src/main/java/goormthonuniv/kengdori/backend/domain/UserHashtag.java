@@ -24,5 +24,4 @@ public class UserHashtag {
 
     private String hashtag; // 해시태그 내용
     private String color; // 지정된 색상
-    private Boolean isDefault; // 색상을 지정하지 않을 경우 필요한 필드 -> 근데 필요할까? (회의 TODO)
 }
