@@ -7,7 +7,9 @@ import goormthonuniv.kengdori.backend.config.KakaoAuthConfig;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Service;
+import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.client.WebClient;
+import reactor.core.publisher.Mono;
 
 @Service
 @RequiredArgsConstructor
@@ -23,20 +25,36 @@ public class KakaoAuthService {
     }
 
     public String getKakaoAccessToken(String code) {
-        // 카카오톡 서버로 POST 요청 후 받은 응답을 response (DTO)에 저장
-        KakaoTokenResponseDTO response = WebClient.create()
-                .post()
+        WebClient webClient = WebClient.create();
+
+        return webClient.post()
                 .uri("https://kauth.kakao.com/oauth/token")
                 .header(HttpHeaders.CONTENT_TYPE, "application/x-www-form-urlencoded")
-                .bodyValue("grant_type=authorization_code&client_id=" + kakaoAuthConfig.getClientId()
-                        + "&redirect_uri=" + kakaoAuthConfig.getRedirectUri()
-                        + "&code=" + code)
-                .retrieve()
-                .bodyToMono(KakaoTokenResponseDTO.class)
-                .block();
+                .body(BodyInserters.fromFormData("grant_type", "authorization_code")
+                        .with("client_id", kakaoAuthConfig.getClientId())
+                        .with("redirect_uri", kakaoAuthConfig.getRedirectUri())
+                        .with("code", code))
+                .exchangeToMono(response -> {
+                    System.out.println("[카카오 응답 상태] " + response.statusCode());
 
-        // 로그인에 필요한 토큰만 리턴
-        return response.getAccessToken();
+                    return response.bodyToMono(String.class)
+                            .flatMap(body -> {
+                                if (response.statusCode().is2xxSuccessful()) {
+                                    try {
+                                        ObjectMapper mapper = new ObjectMapper();
+                                        KakaoTokenResponseDTO dto = mapper.readValue(body, KakaoTokenResponseDTO.class);
+                                        return Mono.just(dto);
+                                    } catch (Exception e) {
+                                        System.err.println("[파싱 오류] " + e.getMessage());
+                                        return Mono.error(e);
+                                    }
+                                } else {
+                                    return Mono.error(new RuntimeException("카카오 토큰 요청 실패: " + body));
+                                }
+                            });
+                })
+                .map(KakaoTokenResponseDTO::getAccessToken)
+                .block();
     }
 
     public Long getKakaoId(String token){

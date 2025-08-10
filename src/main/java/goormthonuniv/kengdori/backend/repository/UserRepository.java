@@ -12,6 +12,6 @@ public interface UserRepository extends JpaRepository<User, Long> {
     // save(User user), findById, findAll, save, deleteById, delete(User user)
 
     Optional<User> findByKakaoId(Long kakaoId); // 이미 가입한 회원인지 확인시 사용 & 리프레시 토큰 매핑 시 사용
-    Optional<User> findByUserId(String userId); // 친구 연결 시 사용자 검색에 사용
-    boolean existsByUserId(String userId); // 아이디 중복 검사
+    Optional<User> findBySearchId(String searchId); // 친구 연결 시 사용자 검색에 사용
+    boolean existsBySearchId(String searchId); // 아이디 중복 검사
 }

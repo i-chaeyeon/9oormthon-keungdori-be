@@ -18,7 +18,7 @@ import java.util.Map;
 
 @Slf4j
 @RequiredArgsConstructor
-@Controller
+@RestController
 @RequestMapping("/api/auth")
 public class KakaoAuthController {
 
@@ -35,28 +35,25 @@ public class KakaoAuthController {
 
     @GetMapping("/kakao/callback")
     public ResponseEntity<KakaoCallbackDTO> callback(@RequestParam String code){
-
         String token = kakaoAuthService.getKakaoAccessToken(code);
         Long kakaoId = kakaoAuthService.getKakaoId(token);
         boolean exists = userService.existsByKakaoId(kakaoId);
         String accessToken = jwtUtil.createAccessToken(kakaoId);
-
-        if(exists){
-            return ResponseEntity.status(HttpStatus.OK).body(new KakaoCallbackDTO(true, accessToken));
-        }
-
-        // 신규 사용자의 경우 DB에 임시 객체 생성
         String refreshToken = jwtUtil.createRefreshToken(kakaoId);
-        userService.createTempUser(kakaoId, refreshToken);
+
+        if(!exists){
+            userService.createTempUser(kakaoId, refreshToken);
+        }
         ResponseCookie cookie = ResponseCookie.from("refreshToken", refreshToken)
                 .httpOnly(true)
-                .secure(true)
+                .secure(false) // 배포 시 true로 변경
                 .path("/")
                 .maxAge(Duration.ofDays(7))
                 .sameSite("Strict")
                 .build();
+
         return ResponseEntity.status(HttpStatus.OK).header(HttpHeaders.SET_COOKIE, cookie.toString())
-                .body(new KakaoCallbackDTO(false, accessToken));
+                .body(new KakaoCallbackDTO(exists, accessToken));
     }
 
     @PostMapping("/logout")

@@ -10,7 +10,7 @@ public class UserResponseDTO {
     private final String accessToken;
     private final Long id;
     private final String userName;
-    private final String userId;
+    private final String searchId;
     private final Boolean search;
     private final String kengColor;
     private final String profileImage;
@@ -20,7 +20,7 @@ public class UserResponseDTO {
                 accessToken,
                 user.getId(),
                 user.getUserName(),
-                user.getUserId(),
+                user.getSearchId(),
                 user.isSearch(),
                 user.getKengColor(),
                 user.getProfileImage()
