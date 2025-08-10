@@ -31,6 +31,8 @@ public class Review {
     @Column(columnDefinition = "TEXT")
     private String memo;
     private Double rating;
+
+    @Column(columnDefinition = "TEXT")
     private String imageUrl;
 
 
