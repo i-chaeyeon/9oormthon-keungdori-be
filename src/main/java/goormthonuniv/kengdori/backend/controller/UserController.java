@@ -15,7 +15,7 @@ import java.util.Map;
 
 @Slf4j
 @RequiredArgsConstructor
-@Controller
+@RestController
 @RequestMapping("api/users")
 public class UserController {
 
@@ -33,7 +33,6 @@ public class UserController {
     public ResponseEntity<UserResponseDTO> signUp(
             @RequestBody UserRequestDTO userRequestDTO,
             @RequestHeader("Authorization") String authHeader){
-
         String accessToken = authHeader.replace("Bearer ", "");
         Long kakaoId = jwtUtil.getClaimsToken(accessToken).get("kakaoId", Long.class);
 
