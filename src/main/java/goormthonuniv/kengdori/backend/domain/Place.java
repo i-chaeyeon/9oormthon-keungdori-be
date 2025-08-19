@@ -3,6 +3,10 @@ package goormthonuniv.kengdori.backend.domain;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
+
 @Entity
 @Table
 @Builder
@@ -16,7 +20,18 @@ public class Place {
     private Long id;
 
     private String name; // 장소명
-    private String kakaoId; // 카카오 API에서 장소의 id
-    private String xCoordinate; // x 좌표
-    private String yCoordinate; // y 좌표
+    private String address; // 장소 주소
+    private String googleId; // 구글 API에서 장소의 id
+    private BigDecimal xCoordinate; // x 좌표
+    private BigDecimal yCoordinate; // y 좌표
+
+
+    // Place 삭제 시 Review와 Hashtag 전부 삭제 (cascade)
+    @Builder.Default
+    @OneToMany(mappedBy = "place", cascade = CascadeType.REMOVE, orphanRemoval = true)
+    private List<Review> reviewList = new ArrayList<>();
+
+    @Builder.Default
+    @OneToMany(mappedBy = "place", cascade = CascadeType.REMOVE, orphanRemoval = true)
+    private List<PlaceHashtag> placeHashtagList = new ArrayList<>();
 }

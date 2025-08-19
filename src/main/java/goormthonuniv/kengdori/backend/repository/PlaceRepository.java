@@ -11,5 +11,5 @@ public interface PlaceRepository extends JpaRepository<Place, Long> {
     // 조회 메서드만 추가해서 사용하면 됨
     // save(User user), findById, findAll, save, deleteById, delete(User user)
 
-    Optional<Place> findBykakaoId(String placeKakaoId);
+    Optional<Place> findBygoogleId(String googleId);
 }

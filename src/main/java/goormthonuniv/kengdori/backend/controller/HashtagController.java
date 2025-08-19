@@ -27,6 +27,7 @@ public class HashtagController {
         return userService.findUserByKakaoId(kakaoId);
     }
 
+    // [1.리뷰등록] 1-1. 해시태그 조회 후 없을 시 생성
     @PostMapping("")
     public ResponseEntity<HashtagResponseDTO> findOrCreate(
             @RequestHeader("Authorization") String authHeader,
@@ -42,6 +43,7 @@ public class HashtagController {
         }
     }
 
+    // [1.리뷰등록] 1-2. 해시태그 색상 변경
     @PatchMapping("")
     public ResponseEntity<HashtagResponseDTO> changeColor(
             @RequestHeader("Authorization") String authHeader,

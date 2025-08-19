@@ -12,7 +12,7 @@ public class PlaceService {
     private final PlaceRepository placeRepository;
 
     public Place findOrCreatePlace(Place place){
-        return placeRepository.findBykakaoId(place.getKakaoId())
+        return placeRepository.findBygoogleId(place.getGoogleId())
                 .orElseGet(() -> placeRepository.save(place));
     }
 }

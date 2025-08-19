@@ -9,6 +9,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.util.Map;
+
 @RequiredArgsConstructor
 @Service
 @Slf4j
@@ -16,14 +18,31 @@ public class HashtagService {
 
     private final UserHashtagRepository userHashtagRepository;
 
+    private static final Map<String, String> COLOR_MAP = Map.of(
+            "ADADAD" , "FFFFFF",
+            "C5711A", "FFFFFF"
+            /// TODO 디자인 보고 추가
+    );
+
+    private String backgroundFontMapper(String backgroundColor){
+        String fontColor = COLOR_MAP.get(backgroundColor);
+        if(fontColor == null){
+            throw new IllegalArgumentException("폰트 색상 매핑 오류 :: 배경색 : " + backgroundColor);
+        }
+
+        return fontColor;
+    }
+
     private UserHashtag createUserHashtag(User user, String hashtag) {
 
-        final String defaultColor = "FFFFFF";
+        final String defaultBackgroundColor = "ADADAD";
+        final String defaultFontColor = "FFFFFF";
 
         UserHashtag newHashtag = UserHashtag.builder()
                 .user(user)
                 .hashtag(hashtag)
-                .color(defaultColor)
+                .backgroundColor(defaultBackgroundColor)
+                .fontColor(defaultFontColor)
                 .build();
         return userHashtagRepository.save(newHashtag);
     }
@@ -33,14 +52,16 @@ public class HashtagService {
         return userHashtagRepository.findByUserAndHashtag(user, hashtag)
                 .map(existing -> HashtagResponseDTO.builder()
                         .hashtag(existing.getHashtag())
-                        .color(existing.getColor())
+                        .backgroundColor(existing.getBackgroundColor())
+                        .fontColor(existing.getFontColor())
                         .status("exists")
                         .build())
                 .orElseGet(() -> {
                     UserHashtag created = createUserHashtag(user, hashtag);
                     return HashtagResponseDTO.builder()
                             .hashtag(created.getHashtag())
-                            .color(created.getColor())
+                            .backgroundColor(created.getBackgroundColor())
+                            .fontColor(created.getFontColor())
                             .status("created")
                             .build();
                 });
@@ -51,12 +72,14 @@ public class HashtagService {
         UserHashtag userHashtag = userHashtagRepository.findByUserAndHashtag(user, hashtagRequestDTO.hashtag)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 해시태그"));
 
-        userHashtag.setColor(hashtagRequestDTO.color);
+        userHashtag.setBackgroundColor(hashtagRequestDTO.backgroundColor);
+        userHashtag.setFontColor(backgroundFontMapper(hashtagRequestDTO.backgroundColor));
         userHashtagRepository.save(userHashtag);
 
         return HashtagResponseDTO.builder()
                 .hashtag(userHashtag.getHashtag())
-                .color(userHashtag.getColor())
+                .backgroundColor(userHashtag.getBackgroundColor())
+                .fontColor(userHashtag.getFontColor())
                 .status("updated")
                 .build();
     }
