@@ -2,6 +2,8 @@ package goormthonuniv.kengdori.backend.controller;
 
 import goormthonuniv.kengdori.backend.DTO.ReviewRequestDTO;
 import goormthonuniv.kengdori.backend.DTO.ReviewResponseDTO;
+import goormthonuniv.kengdori.backend.DTO.ReviewUpdateRequestDTO;
+import goormthonuniv.kengdori.backend.DTO.UserResponseDTO;
 import goormthonuniv.kengdori.backend.JWT.JwtUtil;
 import goormthonuniv.kengdori.backend.domain.User;
 import goormthonuniv.kengdori.backend.service.ReviewServiceImpl;
@@ -10,14 +12,11 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestHeader;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 
 @Slf4j
 @RequiredArgsConstructor
-@Controller
+@RestController
 @RequestMapping("api/reviews")
 public class ReviewController {
 
@@ -40,4 +39,16 @@ public class ReviewController {
         ReviewResponseDTO response = reviewService.createReview(user, reviewRequestDTO);
         return ResponseEntity.status(201).body(response);
     }
+
+    @PatchMapping("/{reviewID}")
+    public ResponseEntity<ReviewResponseDTO> editReview(
+            @RequestHeader("Authorization") String authHeader,
+            @PathVariable Long reviewId,
+            @RequestBody ReviewUpdateRequestDTO reviewUpdateRequestDTO
+    ) {
+        User user = findUser(authHeader);
+        ReviewResponseDTO response = reviewService.updateReview(user, reviewId, reviewUpdateRequestDTO);
+        return ResponseEntity.status(200).body(response);
+    }
+
 }

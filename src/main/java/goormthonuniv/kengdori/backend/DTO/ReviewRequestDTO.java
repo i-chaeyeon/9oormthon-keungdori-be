@@ -3,6 +3,7 @@ package goormthonuniv.kengdori.backend.DTO;
 import goormthonuniv.kengdori.backend.domain.Place;
 import lombok.*;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 @AllArgsConstructor
@@ -11,9 +12,10 @@ import java.util.List;
 public class ReviewRequestDTO {
 
     private final String name;
-    private final String placeKakaoId;
-    private final String xCoordinate;
-    private final String yCoordinate;
+    private final String address;
+    private final String googleId;
+    private final BigDecimal xCoordinate;
+    private final BigDecimal yCoordinate;
 
     private final Double rating;
     private final String mainTag;
@@ -24,7 +26,8 @@ public class ReviewRequestDTO {
     public Place toPlace(){
         return Place.builder()
                 .name(this.name)
-                .kakaoId(this.placeKakaoId)
+                .address(this.address)
+                .googleId(this.googleId)
                 .xCoordinate(this.xCoordinate)
                 .yCoordinate(this.yCoordinate)
                 .build();
