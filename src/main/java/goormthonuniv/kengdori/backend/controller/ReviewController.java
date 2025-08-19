@@ -51,4 +51,14 @@ public class ReviewController {
         return ResponseEntity.status(200).body(response);
     }
 
+
+    @DeleteMapping("/reviews/{reviewId}")
+    public ResponseEntity<Void> deleteReview(
+            @RequestHeader("Authorization") String authHeader,
+            @PathVariable Long reviewId
+    ) {
+        User user = findUser(authHeader);
+        reviewService.deleteReview(user, reviewId);
+        return ResponseEntity.noContent().build();
+    }
 }

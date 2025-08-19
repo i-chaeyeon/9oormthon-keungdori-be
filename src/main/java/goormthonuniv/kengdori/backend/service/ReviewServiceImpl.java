@@ -126,4 +126,16 @@ public class ReviewServiceImpl implements ReviewService{
                 review.getMemo()
         );
     }
+
+    @Transactional
+    public void deleteReview(User user, Long reviewId) {
+        Review review = reviewRepository.findById(reviewId)
+                .orElseThrow(() -> new EntityNotFoundException("Review not found"));
+        Place place = review.getPlace();
+
+        // 사용자가 쓴 리뷰인지 확인해줘야되려나
+
+        placeHashtagRepository.deleteByPlaceAndUserHashtag_User(place, user);
+        reviewRepository.delete(review);
+    }
 }
