@@ -8,7 +8,6 @@ import goormthonuniv.kengdori.backend.service.UserServiceImpl;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
@@ -24,6 +23,7 @@ public class UserController {
 
     @GetMapping("/check-id")
     public ResponseEntity<?> checkUserId(@RequestParam String value){
+        log.info("[ 아이디 중복 확인 ]" + value);
         return ResponseEntity.ok(Map.of(
                 "available", !userService.existsBySearchId(value)
         ));
@@ -43,9 +43,11 @@ public class UserController {
 
     @GetMapping("/me")
     public ResponseEntity<UserResponseDTO> getMyInfo(@RequestHeader("Authorization") String authHeader){
+        log.info("[내 정보 조회 시작]");
         String accessToken = authHeader.replace("Bearer ", "");
         Long kakaoId = jwtUtil.getClaimsToken(accessToken).get("kakaoId", Long.class);
         UserResponseDTO user = UserResponseDTO.from(userService.findUserByKakaoId(kakaoId), accessToken);
+        log.info("[내 정보 조회 완료] 조회된 유저: " + user.getUserName());
         return ResponseEntity.ok(user);
     }
 
@@ -54,9 +56,12 @@ public class UserController {
             @RequestHeader("Authorization") String authHeader,
             @RequestBody UserRequestDTO userRequestDTO
     ){
+        log.info("[내 정보 수정 시작]");
         String accessToken = authHeader.replace("Bearer ", "");
         Long kakaoId = jwtUtil.getClaimsToken(accessToken).get("kakaoId", Long.class);
+        log.info("[수정할 정보]:" + userRequestDTO.getUserName());
         UserResponseDTO updatedUser = userService.updateUser(userService.findUserByKakaoId(kakaoId).getId(), userRequestDTO, accessToken);
+        log.info("[내 정보 수정 완료] 수정된 유저: " + updatedUser.getUserName());
         return ResponseEntity.ok(updatedUser);
     }
 

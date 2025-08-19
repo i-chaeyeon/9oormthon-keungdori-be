@@ -2,6 +2,7 @@ package goormthonuniv.kengdori.backend.controller;
 
 import goormthonuniv.kengdori.backend.DTO.KakaoCallbackDTO;
 import goormthonuniv.kengdori.backend.JWT.JwtUtil;
+import goormthonuniv.kengdori.backend.domain.User;
 import goormthonuniv.kengdori.backend.service.KakaoAuthService;
 import goormthonuniv.kengdori.backend.service.UserServiceImpl;
 import lombok.RequiredArgsConstructor;
@@ -10,7 +11,6 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.Duration;
@@ -28,6 +28,7 @@ public class KakaoAuthController {
 
     @GetMapping("/kakao-url")
     public ResponseEntity<?> passUrl(){
+        log.info("[카카오 URL을 보냈습니다.]");
         return ResponseEntity.ok(Map.of(
                 "url", kakaoAuthService.getKakaoLoginUrl()
         ));
@@ -35,6 +36,7 @@ public class KakaoAuthController {
 
     @GetMapping("/kakao/callback")
     public ResponseEntity<KakaoCallbackDTO> callback(@RequestParam String code){
+        log.info("[전달된 인가 코드] : " + code);
         String token = kakaoAuthService.getKakaoAccessToken(code);
         Long kakaoId = kakaoAuthService.getKakaoId(token);
         boolean exists = userService.existsByKakaoId(kakaoId);
@@ -57,12 +59,9 @@ public class KakaoAuthController {
     }
 
     @PostMapping("/logout")
-    public ResponseEntity<?> logout(@CookieValue("refreshToken") String refreshToken) {
-        if (!jwtUtil.isValidRefreshToken(refreshToken)) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("error", "유효하지 않은 토큰"));
-        }
-
-        Long kakaoId = jwtUtil.getClaimsToken(refreshToken).get("kakaoId", Long.class);
+    public ResponseEntity<?> logout(@RequestHeader("Authorization") String authHeader) {
+        String accessToken = authHeader.replace("Bearer ", "");
+        Long kakaoId = jwtUtil.getClaimsToken(accessToken).get("kakaoId", Long.class);
         userService.deleteRefreshToken(kakaoId);
 
         ResponseCookie deleteCookie = ResponseCookie.from("refreshToken", "")
