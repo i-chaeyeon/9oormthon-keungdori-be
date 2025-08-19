@@ -9,6 +9,7 @@ import goormthonuniv.kengdori.backend.repository.ReviewRepository;
 import goormthonuniv.kengdori.backend.repository.UserHashtagRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -17,6 +18,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+@Slf4j
 @RequiredArgsConstructor
 @Service
 public class ReviewServiceImpl implements ReviewService{
@@ -29,9 +31,14 @@ public class ReviewServiceImpl implements ReviewService{
 
 
     @Override
+    @Transactional
     public ReviewResponseDTO createReview(User user, ReviewRequestDTO dto) {
+        log.info("리뷰 생성 시도 - userId: {}, placeName: {}", user.getId(), dto.getName());
 
         Place place = placeService.findOrCreatePlace(dto.toPlace());
+
+        log.info("생성된 장소 - userId: {}, place: {}", user.getId(), place.getName());
+        log.info("리뷰 생성 시도 - userId: {}, maintag {}", user.getId(), dto.getMainTag());
 
         UserHashtag mainTag = hashtagService.findUserHashtag(user, dto.getMainTag());
         PlaceHashtag mainRel = PlaceHashtag.builder()
@@ -59,6 +66,8 @@ public class ReviewServiceImpl implements ReviewService{
                 .build();
         reviewRepository.save(review);
 
+        log.info("리뷰 생성 완료 - reviewId: {}, placeId: {}", review.getId(), place.getId());
+
         return new ReviewResponseDTO(
                 place.getId(),
                 review.getId(),
@@ -67,13 +76,16 @@ public class ReviewServiceImpl implements ReviewService{
                 mainTag.getHashtag(),
                 dto.getSubTags(),
                 review.getImageUrl(),
-                review.getMemo()
+                review.getMemo(),
+                review.getCreatedAt()
         );
     }
 
     @Override
     @Transactional
     public ReviewResponseDTO updateReview(User user, Long reviewId, ReviewUpdateRequestDTO dto) {
+
+        log.info("리뷰 수정 시도 - reviewId: {}, userId: {}", reviewId, user.getId());
 
         Review review = reviewRepository.findById(reviewId)
                 .orElseThrow(() -> new EntityNotFoundException("Review not found"));
@@ -115,6 +127,7 @@ public class ReviewServiceImpl implements ReviewService{
         allPlaceHashtags.add(mainRel);
         placeHashtagRepository.saveAll(allPlaceHashtags);
 
+        log.info("리뷰 수정 완료 - reviewId: {}", reviewId);
         return new ReviewResponseDTO(
                 place.getId(),
                 review.getId(),
@@ -123,19 +136,28 @@ public class ReviewServiceImpl implements ReviewService{
                 mainTag.getHashtag(),
                 dto.getSubTags(),
                 review.getImageUrl(),
-                review.getMemo()
+                review.getMemo(),
+                review.getCreatedAt()
         );
     }
 
+    @Override
     @Transactional
     public void deleteReview(User user, Long reviewId) {
+
+        log.info("리뷰 삭제 시도 - reviewId: {}, userId: {}", reviewId, user.getId());
         Review review = reviewRepository.findById(reviewId)
                 .orElseThrow(() -> new EntityNotFoundException("Review not found"));
         Place place = review.getPlace();
 
         // 사용자가 쓴 리뷰인지 확인해줘야되려나
 
+        log.info("리뷰에 연결된 해시태그 삭제 - placeId: {}, userId: {}", place.getId(), user.getId());
         placeHashtagRepository.deleteByPlaceAndUserHashtag_User(place, user);
+
+        log.info("리뷰 엔티티 삭제 - reviewId: {}", reviewId);
         reviewRepository.delete(review);
+
+        log.info("리뷰 삭제 완료 - reviewId: {}", reviewId);
     }
 }
