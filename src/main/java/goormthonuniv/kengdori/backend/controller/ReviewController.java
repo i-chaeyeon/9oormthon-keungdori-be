@@ -52,7 +52,7 @@ public class ReviewController {
     }
 
 
-    @DeleteMapping("/reviews/{reviewId}")
+    @DeleteMapping("/{reviewId}")
     public ResponseEntity<Void> deleteReview(
             @RequestHeader("Authorization") String authHeader,
             @PathVariable Long reviewId
