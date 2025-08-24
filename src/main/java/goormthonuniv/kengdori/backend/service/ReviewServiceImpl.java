@@ -3,13 +3,17 @@ package goormthonuniv.kengdori.backend.service;
 import goormthonuniv.kengdori.backend.DTO.ReviewRequestDTO;
 import goormthonuniv.kengdori.backend.DTO.ReviewResponseDTO;
 import goormthonuniv.kengdori.backend.DTO.ReviewUpdateRequestDTO;
+import goormthonuniv.kengdori.backend.DTO.VisitedPlaceResponseDTO;
 import goormthonuniv.kengdori.backend.domain.*;
 import goormthonuniv.kengdori.backend.repository.PlaceHashtagRepository;
+import goormthonuniv.kengdori.backend.repository.PlaceRepository;
 import goormthonuniv.kengdori.backend.repository.ReviewRepository;
 import goormthonuniv.kengdori.backend.repository.UserHashtagRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -25,6 +29,7 @@ public class ReviewServiceImpl implements ReviewService{
 
     private final PlaceService placeService;
     private final HashtagService hashtagService;
+    private final PlaceRepository placeRepository;
     private final ReviewRepository reviewRepository;
     private final PlaceHashtagRepository placeHashtagRepository;
     private final UserHashtagRepository userHashtagRepository;
@@ -159,5 +164,12 @@ public class ReviewServiceImpl implements ReviewService{
         reviewRepository.delete(review);
 
         log.info("리뷰 삭제 완료 - reviewId: {}", reviewId);
+    }
+
+    @Override
+    public Page<VisitedPlaceResponseDTO> searchMyReviewedPlaces(User user, String keyword, Pageable pageable) {
+        Page<Place> places = placeRepository.findPlacesByUserReviewAndKeyword(user, keyword, pageable);
+
+        return places.map(VisitedPlaceResponseDTO::new);
     }
 }

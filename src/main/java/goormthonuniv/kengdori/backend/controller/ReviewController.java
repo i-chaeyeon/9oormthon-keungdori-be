@@ -1,15 +1,17 @@
 package goormthonuniv.kengdori.backend.controller;
 
-import goormthonuniv.kengdori.backend.DTO.ReviewRequestDTO;
-import goormthonuniv.kengdori.backend.DTO.ReviewResponseDTO;
-import goormthonuniv.kengdori.backend.DTO.ReviewUpdateRequestDTO;
-import goormthonuniv.kengdori.backend.DTO.UserResponseDTO;
+import goormthonuniv.kengdori.backend.DTO.*;
 import goormthonuniv.kengdori.backend.JWT.JwtUtil;
 import goormthonuniv.kengdori.backend.domain.User;
+import goormthonuniv.kengdori.backend.exception.NoResultsFoundException;
 import goormthonuniv.kengdori.backend.service.ReviewServiceImpl;
 import goormthonuniv.kengdori.backend.service.UserServiceImpl;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
@@ -60,5 +62,24 @@ public class ReviewController {
         User user = findUser(authHeader);
         reviewService.deleteReview(user, reviewId);
         return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/visited")
+    public ResponseEntity<Page<VisitedPlaceResponseDTO>> searchMyVisitedPlaces(
+            @RequestHeader("Authorization") String authHeader,
+            @RequestParam("search") String keyword,
+            @RequestParam(defaultValue = "0") int page) {
+
+        User user = findUser(authHeader);
+
+        Pageable pageable = PageRequest.of(page, 10, Sort.by("id").descending());
+
+        Page<VisitedPlaceResponseDTO> result = reviewService.searchMyReviewedPlaces(user, keyword, pageable);
+
+        if (result.isEmpty()) {
+            throw new NoResultsFoundException("검색 결과가 없습니다.");
+        }
+
+        return ResponseEntity.ok(result);
     }
 }

@@ -1,7 +1,12 @@
 package goormthonuniv.kengdori.backend.repository;
 
 import goormthonuniv.kengdori.backend.domain.Place;
+import goormthonuniv.kengdori.backend.domain.User;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 import java.util.Optional;
 
@@ -12,4 +17,11 @@ public interface PlaceRepository extends JpaRepository<Place, Long> {
     // save(User user), findById, findAll, save, deleteById, delete(User user)
 
     Optional<Place> findBygoogleId(String googleId);
+
+    @Query("SELECT DISTINCT p FROM Place p JOIN p.reviewList r WHERE r.user = :user AND p.name LIKE %:keyword%")
+    Page<Place> findPlacesByUserReviewAndKeyword(
+            @Param("user") User user,
+            @Param("keyword") String keyword,
+            Pageable pageable
+    );
 }
