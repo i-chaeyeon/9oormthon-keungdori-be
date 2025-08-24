@@ -21,4 +21,6 @@ public interface ReviewService {
     // D
 
     void deleteReview(User user, Long reviewId);
+
+    Page<VisitedPlaceResponseDTO> findPlacesByHashtag(String hashtag, Pageable pageable);
 }

@@ -172,4 +172,12 @@ public class ReviewServiceImpl implements ReviewService{
 
         return places.map(VisitedPlaceResponseDTO::new);
     }
+
+    @Override
+    public Page<VisitedPlaceResponseDTO> findPlacesByHashtag(String hashtag, Pageable pageable) {
+
+        Page<Place> places = placeRepository.findByHashtag(hashtag, pageable);
+
+        return places.map(VisitedPlaceResponseDTO::new);
+    }
 }

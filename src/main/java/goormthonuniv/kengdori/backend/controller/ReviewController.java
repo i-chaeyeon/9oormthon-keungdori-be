@@ -82,4 +82,24 @@ public class ReviewController {
 
         return ResponseEntity.ok(result);
     }
+
+    @GetMapping("/hashtag")
+    public ResponseEntity<Page<VisitedPlaceResponseDTO>> findPlacesByHashtag(
+            @RequestParam("tag") String hashtag,
+            @RequestParam(defaultValue = "0") int page) {
+
+        if (!hashtag.startsWith("#")) {
+            hashtag = "#" + hashtag;
+        }
+
+        Pageable pageable = PageRequest.of(page, 10, Sort.by("id").descending());
+
+        Page<VisitedPlaceResponseDTO> result = reviewService.findPlacesByHashtag(hashtag, pageable);
+
+        if (result.isEmpty()) {
+            throw new NoResultsFoundException("검색 결과가 없습니다.");
+        }
+
+        return ResponseEntity.ok(result);
+    }
 }

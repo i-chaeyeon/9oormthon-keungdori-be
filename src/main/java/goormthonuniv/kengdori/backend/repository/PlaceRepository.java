@@ -24,4 +24,10 @@ public interface PlaceRepository extends JpaRepository<Place, Long> {
             @Param("keyword") String keyword,
             Pageable pageable
     );
+
+    @Query("SELECT p FROM Place p JOIN p.placeHashtagList ph JOIN ph.userHashtag uh WHERE uh.hashtag = :hashtag")
+    Page<Place> findByHashtag(
+            @Param("hashtag") String hashtag,
+            Pageable pageable
+    );
 }
