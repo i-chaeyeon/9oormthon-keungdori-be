@@ -103,7 +103,7 @@ public class HashtagService {
         userHashtag.setFontColor(backgroundFontMapper(hashtagRequestDTO.backgroundColor));
         userHashtagRepository.save(userHashtag);
 
-        log.info("해시태그 색상 변경 완료 - userHashtagId: {}", userHashtag.getId());
+        log.info("해시태그 색상 변경 완료 - userHashtagId: {} color: {}", userHashtag.getId(), userHashtag.getBackgroundColor());
 
         return HashtagResponseDTO.builder()
                 .hashtag(userHashtag.getHashtag())

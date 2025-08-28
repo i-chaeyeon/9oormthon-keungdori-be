@@ -5,6 +5,7 @@ import goormthonuniv.kengdori.backend.JWT.JwtUtil;
 import goormthonuniv.kengdori.backend.domain.User;
 import goormthonuniv.kengdori.backend.service.KakaoAuthService;
 import goormthonuniv.kengdori.backend.service.UserServiceImpl;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
@@ -48,11 +49,13 @@ public class KakaoAuthController {
         }
         ResponseCookie cookie = ResponseCookie.from("refreshToken", refreshToken)
                 .httpOnly(true)
-                .secure(false) // 배포 시 true로 변경
+                .secure(true) // 'None'을 사용하려면 반드시 'true'
                 .path("/")
                 .maxAge(Duration.ofDays(7))
-                .sameSite("Strict")
+                .sameSite("None")
                 .build();
+
+        log.info("[ResponseCookie 생성 완료] {}", cookie.toString()); // 이 줄을 추가
 
         return ResponseEntity.status(HttpStatus.OK).header(HttpHeaders.SET_COOKIE, cookie.toString())
                 .body(new KakaoCallbackDTO(exists, accessToken));
@@ -78,7 +81,9 @@ public class KakaoAuthController {
     }
 
     @PostMapping("/reissue")
-    public ResponseEntity<?> reissue(@CookieValue("refreshToken") String refreshToken) {
+    public ResponseEntity<?> reissue(@CookieValue("refreshToken") String refreshToken)  {
+        log.info("[Reissue] 전달받은 리프레시 토큰: {}", refreshToken);
+
         if (!jwtUtil.isValidRefreshToken(refreshToken)) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("error", "유효하지 않은 토큰"));
         }

@@ -168,7 +168,11 @@ public class ReviewServiceImpl implements ReviewService{
 
     @Override
     public Page<VisitedPlaceResponseDTO> searchMyReviewedPlaces(User user, String keyword, Pageable pageable) {
+        log.info("리뷰 장소 검색 시도 - userId: {}, keyword: {}", user.getId(), keyword);
+
         Page<Place> places = placeRepository.findPlacesByUserReviewAndKeyword(user, keyword, pageable);
+
+        log.info("검색 완료 - 장소 총 {}개", places.getTotalElements());
 
         return places.map(VisitedPlaceResponseDTO::new);
     }
@@ -176,7 +180,11 @@ public class ReviewServiceImpl implements ReviewService{
     @Override
     public Page<VisitedPlaceResponseDTO> findPlacesByHashtag(String hashtag, Pageable pageable) {
 
+        log.info("해시태그 검색 - hashtag: {}", hashtag);
+
         Page<Place> places = placeRepository.findByHashtag(hashtag, pageable);
+
+        log.info("해시태그 검색 완료 - 장소 총 {}개", places.getTotalElements());
 
         return places.map(VisitedPlaceResponseDTO::new);
     }
