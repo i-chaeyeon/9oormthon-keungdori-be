@@ -13,7 +13,6 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 @Slf4j
@@ -65,26 +64,26 @@ public class ReviewController {
     }
 
     @GetMapping("/visited")
-    public ResponseEntity<Page<VisitedPlaceResponseDTO>> searchMyVisitedPlaces(
+    public ResponseEntity<ReadResponseDTO<VisitedPlaceResponseDTO>> searchMyVisitedPlaces(
             @RequestHeader("Authorization") String authHeader,
             @RequestParam("search") String keyword,
             @RequestParam(defaultValue = "0") int page) {
 
         User user = findUser(authHeader);
-
         Pageable pageable = PageRequest.of(page, 10, Sort.by("id").descending());
 
-        Page<VisitedPlaceResponseDTO> result = reviewService.searchMyReviewedPlaces(user, keyword, pageable);
+        Page<VisitedPlaceResponseDTO> resultPage = reviewService.searchMyReviewedPlaces(user, keyword, pageable);
 
-        if (result.isEmpty()) {
+        if (resultPage.isEmpty()) {
             throw new NoResultsFoundException("검색 결과가 없습니다.");
         }
 
-        return ResponseEntity.ok(result);
+        ReadResponseDTO<VisitedPlaceResponseDTO> response = new ReadResponseDTO<>(resultPage);
+        return ResponseEntity.ok(response);
     }
 
     @GetMapping("/hashtag")
-    public ResponseEntity<Page<VisitedPlaceResponseDTO>> findPlacesByHashtag(
+    public ResponseEntity<ReadResponseDTO<VisitedPlaceResponseDTO>> findPlacesByHashtag(
             @RequestParam("tag") String hashtag,
             @RequestParam(defaultValue = "0") int page) {
 
@@ -94,12 +93,13 @@ public class ReviewController {
 
         Pageable pageable = PageRequest.of(page, 10, Sort.by("id").descending());
 
-        Page<VisitedPlaceResponseDTO> result = reviewService.findPlacesByHashtag(hashtag, pageable);
+        Page<VisitedPlaceResponseDTO> resultPage = reviewService.findPlacesByHashtag(hashtag, pageable);
 
-        if (result.isEmpty()) {
+        if (resultPage.isEmpty()) {
             throw new NoResultsFoundException("검색 결과가 없습니다.");
         }
 
-        return ResponseEntity.ok(result);
+        ReadResponseDTO<VisitedPlaceResponseDTO> response = new ReadResponseDTO<>(resultPage);
+        return ResponseEntity.ok(response);
     }
 }
