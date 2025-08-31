@@ -41,7 +41,7 @@ public class ReviewController {
         return ResponseEntity.status(201).body(response);
     }
 
-    @PatchMapping("/{reviewID}")
+    @PatchMapping("/{reviewId}")
     public ResponseEntity<ReviewResponseDTO> editReview(
             @RequestHeader("Authorization") String authHeader,
             @PathVariable Long reviewId,
@@ -63,6 +63,7 @@ public class ReviewController {
         return ResponseEntity.noContent().build();
     }
 
+    ///  [3-1]
     @GetMapping("/visited")
     public ResponseEntity<ReadResponseDTO<VisitedPlaceResponseDTO>> searchMyVisitedPlaces(
             @RequestHeader("Authorization") String authHeader,
@@ -82,8 +83,10 @@ public class ReviewController {
         return ResponseEntity.ok(response);
     }
 
+    ///  [3-2]
     @GetMapping("/hashtag")
     public ResponseEntity<ReadResponseDTO<VisitedPlaceResponseDTO>> findPlacesByHashtag(
+            @RequestHeader("Authorization") String authHeader,
             @RequestParam("tag") String hashtag,
             @RequestParam(defaultValue = "0") int page) {
 
@@ -101,5 +104,20 @@ public class ReviewController {
 
         ReadResponseDTO<VisitedPlaceResponseDTO> response = new ReadResponseDTO<>(resultPage);
         return ResponseEntity.ok(response);
+    }
+
+    ///  [3-3]
+    @GetMapping("/place/{googleId}")
+    public ResponseEntity<ReviewListByPlaceDTO> findMyReviewsByPlace(
+            @RequestHeader("Authorization") String authHeader,
+            @PathVariable String googleId,
+            @RequestParam(defaultValue = "0") int page
+    ){
+        User user = findUser(authHeader);
+        Pageable pageable = PageRequest.of(page, 10, Sort.by("createdAt").descending());
+
+        ReviewListByPlaceDTO result = reviewService.findMyReviewsByPlace(googleId, user, pageable);
+
+        return ResponseEntity.ok(result);
     }
 }

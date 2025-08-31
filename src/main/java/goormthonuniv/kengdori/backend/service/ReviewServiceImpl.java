@@ -1,9 +1,6 @@
 package goormthonuniv.kengdori.backend.service;
 
-import goormthonuniv.kengdori.backend.DTO.ReviewRequestDTO;
-import goormthonuniv.kengdori.backend.DTO.ReviewResponseDTO;
-import goormthonuniv.kengdori.backend.DTO.ReviewUpdateRequestDTO;
-import goormthonuniv.kengdori.backend.DTO.VisitedPlaceResponseDTO;
+import goormthonuniv.kengdori.backend.DTO.*;
 import goormthonuniv.kengdori.backend.domain.*;
 import goormthonuniv.kengdori.backend.repository.PlaceHashtagRepository;
 import goormthonuniv.kengdori.backend.repository.PlaceRepository;
@@ -187,5 +184,20 @@ public class ReviewServiceImpl implements ReviewService{
         log.info("해시태그 검색 완료 - 장소 총 {}개", places.getTotalElements());
 
         return places.map(VisitedPlaceResponseDTO::new);
+    }
+
+    @Override
+    public ReviewListByPlaceDTO findMyReviewsByPlace(String googleId, User user, Pageable pageable){
+
+        Place place = placeRepository.findBygoogleId(googleId)
+                .orElseThrow(() -> new EntityNotFoundException("해당 장소를 찾을 수 없습니다."));
+
+        log.info("장소의 리뷰 목록 불러오기 - 장소명: {}", place.getName());
+
+        Page<Review> reviewPage = reviewRepository.findByPlaceAndUser(place, user, pageable);
+
+        log.info("장소의 리뷰 목록 조회 완료 - 리뷰 총 {}개", reviewPage.getTotalElements());
+
+        return new ReviewListByPlaceDTO(place, reviewPage);
     }
 }
