@@ -2,6 +2,7 @@ package goormthonuniv.kengdori.backend.service;
 
 import goormthonuniv.kengdori.backend.DTO.*;
 import goormthonuniv.kengdori.backend.domain.*;
+import goormthonuniv.kengdori.backend.exception.UnauthorizedException;
 import goormthonuniv.kengdori.backend.repository.PlaceHashtagRepository;
 import goormthonuniv.kengdori.backend.repository.PlaceRepository;
 import goormthonuniv.kengdori.backend.repository.ReviewRepository;
@@ -30,7 +31,6 @@ public class ReviewServiceImpl implements ReviewService{
     private final ReviewRepository reviewRepository;
     private final PlaceHashtagRepository placeHashtagRepository;
     private final UserHashtagRepository userHashtagRepository;
-
 
     @Override
     @Transactional
@@ -199,5 +199,20 @@ public class ReviewServiceImpl implements ReviewService{
         log.info("장소의 리뷰 목록 조회 완료 - 리뷰 총 {}개", reviewPage.getTotalElements());
 
         return new ReviewListByPlaceDTO(place, reviewPage);
+    }
+
+    @Override
+    public ReviewDetailsResponseDTO getReviewDetailsForUser(Long reviewId, User user) {
+
+        log.info("특정 리뷰의 상세보기 시작 - 리뷰 아이디: {}", reviewId);
+
+        Review review = reviewRepository.findById(reviewId)
+                .orElseThrow(() -> new EntityNotFoundException("해당 리뷰 없음. 아이디: " + reviewId));
+
+        if (!review.getUser().getId().equals(user.getId())) {
+            throw new UnauthorizedException("리뷰를 조회할 권한이 없습니다.");
+        }
+
+        return new ReviewDetailsResponseDTO(review);
     }
 }

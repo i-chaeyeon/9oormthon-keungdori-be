@@ -14,6 +14,7 @@ public interface ReviewService {
     // R
     Page<VisitedPlaceResponseDTO> searchMyReviewedPlaces(User user, String keyword, Pageable pageable);
     ReviewListByPlaceDTO findMyReviewsByPlace(String googleId, User user, Pageable pageable);
+    ReviewDetailsResponseDTO getReviewDetailsForUser(Long reviewId, User user);
 
     // U
     ReviewResponseDTO updateReview(User user, Long reviewId, ReviewUpdateRequestDTO reviewUpdateRequestDTO);

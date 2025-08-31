@@ -120,4 +120,17 @@ public class ReviewController {
 
         return ResponseEntity.ok(result);
     }
+
+    ///  [3-4] 특정 리뷰 상세보기
+    @GetMapping("/{reviewId}")
+    public ResponseEntity<ReviewDetailsResponseDTO> seeDetailsOfReview(
+            @RequestHeader("Authorization") String authHeader,
+            @PathVariable Long reviewId
+    ){
+        User user = findUser(authHeader);
+
+        ReviewDetailsResponseDTO response = reviewService.getReviewDetailsForUser(reviewId, user);
+
+        return ResponseEntity.ok(response);
+    }
 }
