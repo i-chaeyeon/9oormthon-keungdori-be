@@ -38,7 +38,6 @@ public class HashtagController {
 
         HashtagResponseDTO response = hashtagService.findOrCreateUserHashtag(user, hashtagRequestDTO.hashtag);
 
-        // 상태에 따라 다른 로그 추가
         if("exists".equals(response.status)){
             log.info("해시태그 조회 성공 - ID: {}", response.hashtag);
             return ResponseEntity.ok(response);

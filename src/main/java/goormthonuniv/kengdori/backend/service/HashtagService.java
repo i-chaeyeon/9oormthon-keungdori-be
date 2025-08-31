@@ -93,6 +93,11 @@ public class HashtagService {
     }
 
     public HashtagResponseDTO changeColor(User user, HashtagRequestDTO hashtagRequestDTO){
+
+        if (!hashtagRequestDTO.backgroundColor.startsWith("#")) {
+            hashtagRequestDTO.backgroundColor = "#" + hashtagRequestDTO.backgroundColor;
+        }
+
         log.info("해시태그 색상 변경 시도 - userId: {}, hashtag: '{}', color: {}",
                 user.getUserName(), hashtagRequestDTO.hashtag, hashtagRequestDTO.backgroundColor);
 
