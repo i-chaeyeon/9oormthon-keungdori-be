@@ -8,7 +8,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 public class CorsConfig {
 
     private static final String LOCALHOST_ORIGIN = "http://localhost:5173";
-    private static final String LOCAL_IP_ORIGIN = "http://172.30.1.88:5173";
+    private static final String LOCAL_IP_ORIGIN = "http://10.221.82.78:5173";
 
     @Bean
     public WebMvcConfigurer corsConfigurer() {
