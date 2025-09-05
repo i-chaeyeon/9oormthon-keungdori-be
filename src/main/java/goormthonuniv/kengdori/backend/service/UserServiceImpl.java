@@ -5,11 +5,13 @@ import goormthonuniv.kengdori.backend.DTO.UserResponseDTO;
 import goormthonuniv.kengdori.backend.domain.User;
 import goormthonuniv.kengdori.backend.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @RequiredArgsConstructor
 @Service
+@Slf4j
 public class UserServiceImpl implements UserService{
 
     private final UserRepository userRepository;
@@ -54,21 +56,23 @@ public class UserServiceImpl implements UserService{
     public UserResponseDTO updateUser(Long id, UserRequestDTO userRequestDTO, String accessToken) {
         User user = userRepository.findById(id).orElseThrow(() -> new RuntimeException("User not found"));
         if(userRequestDTO.getUserName() != null) {
+            log.info("[수정] : 사용자 이름 변경 감지됨");
             user.setUserName(userRequestDTO.getUserName());
         }
         if(userRequestDTO.getSearchId() != null){
             user.setSearchId(userRequestDTO.getSearchId());
         }
         if(userRequestDTO.getSearch() != null){
+            log.info("[수정] : 검색 가능 여부 변경 감지됨");
             user.setSearch(userRequestDTO.getSearch());
         }
         if(userRequestDTO.getKengColor() != null){
+            log.info("[수정] : 킁도리 색상 변경 감지됨");
             user.setKengColor(userRequestDTO.getKengColor());
         }
         if(userRequestDTO.getProfileImage() != null){
             user.setProfileImage(userRequestDTO.getProfileImage());
         }
-
         return UserResponseDTO.from(user, accessToken);
     }
 
