@@ -5,7 +5,7 @@ spring:
   datasource:
     url: jdbc:postgresql://aws-0-ap-northeast-2.pooler.supabase.com:5432/postgres?prepareThreshold=0
     username: postgres.lncoqvbkyqwzdgqwcnzl
-    password: {DB_PASSWORD}
+    password: ${DB_PASSWORD}
     driver-class-name: org.postgresql.Driver
     hikari:
       maximum-pool-size: 1
@@ -22,11 +22,11 @@ spring:
         format_sql: true
 
 kakao:
-  client_id: {KAKAO_CLIENT_ID}
+  client_id: ${KAKAO_CLIENT_ID}
   redirect_uri: http://10.221.82.78:5173/oauth/callback
 #  redirect_uri: http://localhost:8080/api/auth/kakao/callback
 
 jwt:
   access-token-expiration: 86400000 # 1일
   refresh-token-expiration: 1209600000 # 14일
-  secret: {JWT_SECRET}
+  secret: ${JWT_SECRET}
