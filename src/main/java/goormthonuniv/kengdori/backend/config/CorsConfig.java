@@ -9,6 +9,7 @@ public class CorsConfig {
 
     private static final String LOCALHOST_ORIGIN = "http://localhost:5173";
     private static final String LOCAL_IP_ORIGIN = "http://10.221.82.78:5173";
+    private static final String CLOUDTYPE_ORIGIN = "https://port-0-keungdori-be-mf68say742c07b64.sel5.cloudtype.app";
 
     @Bean
     public WebMvcConfigurer corsConfigurer() {
@@ -18,7 +19,8 @@ public class CorsConfig {
                 registry.addMapping("/**")
                         .allowedOrigins(
                                 LOCALHOST_ORIGIN,
-                                LOCAL_IP_ORIGIN
+                                LOCAL_IP_ORIGIN,
+                                CLOUDTYPE_ORIGIN
                         )
                         .allowedMethods(
                                 "GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"
