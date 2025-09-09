@@ -23,8 +23,8 @@ spring:
 
 kakao:
   client_id: ${KAKAO_CLIENT_ID}
-  redirect_uri: http://10.221.82.78:5173/oauth/callback
-#  redirect_uri: http://localhost:8080/api/auth/kakao/callback
+#  redirect_uri: http://10.221.82.78:5173/oauth/callback
+  redirect_uri: https://port-0-keungdori-be-mf68say742c07b64.sel5.cloudtype.app/api/auth/kakao/callback
 
 jwt:
   access-token-expiration: 86400000 # 1일
