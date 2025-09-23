@@ -1,3 +1,6 @@
+### 배포 관련 action으로 개인 레포지토리로 변경해 사용합니다. 
+[✨Go To Updated Repository](https://github.com/i-chaeyeon/9oormthon-keungdori-be)
+
 # 성균관대 구름톤 유니브 4기: 킁도리 
 **참여자**: 구름톤 유니브 4기 2팀 킁도리
 
