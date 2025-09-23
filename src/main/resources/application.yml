@@ -3,8 +3,8 @@ spring:
     import: optional:classpath:application-secret.yml
 
   datasource:
-    url: jdbc:postgresql://aws-0-ap-northeast-2.pooler.supabase.com:5432/postgres?prepareThreshold=0
-    username: postgres.lncoqvbkyqwzdgqwcnzl
+    url: jdbc:postgresql://svc.sel5.cloudtype.app:30502/postgresql
+    username: root
     password: ${DB_PASSWORD}
     driver-class-name: org.postgresql.Driver
     hikari:
@@ -23,8 +23,6 @@ spring:
 
 kakao:
   client_id: ${KAKAO_CLIENT_ID}
-#  redirect_uri: http://10.221.82.78:5173/oauth/callback
-#  redirect_uri: https://port-0-keungdori-be-mf68say742c07b64.sel5.cloudtype.app/api/auth/kakao/callback
   redirect_uri: https://keungdori-frontend-git-feat-login-park-junhyeongs-projects.vercel.app/oauth/callback
 
 jwt:
