@@ -134,9 +134,14 @@ public class HashtagService {
     public UserHashtag findUserHashtag(User user, String hashtag){
         log.info("해시태그 조회 시도 - 사용자: {}, 해시태그: {}", user.getUserName(), hashtag);
 
+        if (hashtag.startsWith("#")) {
+            hashtag = hashtag.substring(1);
+        }
+
+        String finalHashtag = hashtag;
         return userHashtagRepository.findByUserAndHashtag(user, hashtag)
                 .orElseThrow(() -> {
-                    log.warn("존재하지 않는 해시태그 요청 - 사용자: {}, 해시태그: {}", user.getId(), hashtag);
+                    log.warn("존재하지 않는 해시태그 요청 - 사용자: {}, 해시태그: {}", user.getId(), finalHashtag);
                     return new RuntimeException("등록되지 않은 해시태그");
                 });
     }
