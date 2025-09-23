@@ -3,8 +3,8 @@ spring:
     import: optional:classpath:application-secret.yml
 
   datasource:
-    url: jdbc:postgresql://svc.sel5.cloudtype.app:30502/postgresql
-    username: root
+    url: jdbc:postgresql://svc.sel5.cloudtype.app:30502/postgres
+    username: postgres
     password: ${DB_PASSWORD}
     driver-class-name: org.postgresql.Driver
     hikari:
