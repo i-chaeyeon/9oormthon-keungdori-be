@@ -57,6 +57,10 @@ public class HashtagService {
 
         log.info("신규 해시태그 생성 - userId: {}, hashtag: '{}'", user.getId(), hashtag);
 
+        if (hashtag.startsWith("#")) {
+            hashtag = hashtag.substring(1);
+        }
+
         final String defaultBackgroundColor = "#adadad";
         final String defaultFontColor = "#ffffff";
 
@@ -73,6 +77,11 @@ public class HashtagService {
 
         log.info("해시태그 조회/생성 시도 - userId: {}, hashtag: '{}'", user.getId(), hashtag);
 
+        if (hashtag.startsWith("#")) {
+            hashtag = hashtag.substring(1);
+        }
+
+        String finalHashtag = hashtag;
         return userHashtagRepository.findByUserAndHashtag(user, hashtag)
                 .map(existing -> HashtagResponseDTO.builder()
                         .hashtag(existing.getHashtag())
@@ -81,7 +90,7 @@ public class HashtagService {
                         .status("exists")
                         .build())
                 .orElseGet(() -> {
-                    UserHashtag created = createUserHashtag(user, hashtag);
+                    UserHashtag created = createUserHashtag(user, finalHashtag);
                     log.info("created default color : {} ", created.getBackgroundColor());
                     return HashtagResponseDTO.builder()
                             .hashtag(created.getHashtag())
@@ -96,6 +105,10 @@ public class HashtagService {
 
         if (!hashtagRequestDTO.backgroundColor.startsWith("#")) {
             hashtagRequestDTO.backgroundColor = "#" + hashtagRequestDTO.backgroundColor;
+        }
+
+        if (hashtagRequestDTO.hashtag.startsWith("#")) {
+            hashtagRequestDTO.hashtag = hashtagRequestDTO.hashtag.substring(1);
         }
 
         log.info("해시태그 색상 변경 시도 - userId: {}, hashtag: '{}', color: {}",
