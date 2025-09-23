@@ -25,6 +25,9 @@ jobs:
             app: java@17
             options:
               ports: "8080"
+              git:
+                  url: "https://github.com/${{ github.repository }}.git"
+                  ref: ${{ github.ref_name }}
               env:
                 - name: KAKAO_CLIENT_ID
                   secret: KAKAO_CLIENT_ID
