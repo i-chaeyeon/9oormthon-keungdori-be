@@ -48,6 +48,7 @@ public class UserController {
         Long kakaoId = jwtUtil.getClaimsToken(accessToken).get("kakaoId", Long.class);
         UserResponseDTO user = UserResponseDTO.from(userService.findUserByKakaoId(kakaoId), accessToken);
         log.info("[내 정보 조회 완료] 조회된 유저: " + user.getUserName());
+        log.info("[내 정보 조회 완료] 조회된 유저의 프로필 사진: " + user.getProfileImage());
         return ResponseEntity.ok(user);
     }
 
