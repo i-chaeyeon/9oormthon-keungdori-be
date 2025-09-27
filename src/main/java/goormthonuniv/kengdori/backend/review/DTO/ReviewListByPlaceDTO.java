@@ -7,6 +7,7 @@ import goormthonuniv.kengdori.backend.global.DTO.PageInfoDTO;
 import lombok.Getter;
 import org.springframework.data.domain.Page;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -22,5 +23,11 @@ public class ReviewListByPlaceDTO {
                 .map(ReviewListResponseDTO::new)
                 .collect(Collectors.toList());
         this.pageInfo = new PageInfoDTO(reviewPage);
+    }
+
+    public ReviewListByPlaceDTO(){
+        this.placeInfo = new PlaceInfoDTO();
+        this.reviews = Collections.emptyList();
+        this.pageInfo = new PageInfoDTO(Page.empty());
     }
 }

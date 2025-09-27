@@ -14,4 +14,10 @@ public class PlaceInfoDTO {
         this.placeName = place.getName();
         this.address = place.getAddress();
     }
+
+    public PlaceInfoDTO() {
+        this.placeId = null;
+        this.placeName = "히스토리 없는 장소";
+        this.address = "";
+    }
 }

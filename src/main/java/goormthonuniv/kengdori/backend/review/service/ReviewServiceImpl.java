@@ -25,6 +25,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -196,13 +197,17 @@ public class ReviewServiceImpl implements ReviewService{
     @Override
     public ReviewListByPlaceDTO findMyReviewsByPlace(String googleId, User user, Pageable pageable){
 
-        Place place = placeRepository.findBygoogleId(googleId)
-                .orElseThrow(() -> new EntityNotFoundException("해당 장소를 찾을 수 없습니다."));
+        Optional<Place> optionalPlace = placeRepository.findBygoogleId(googleId);
 
+        if (optionalPlace.isEmpty()) {
+            log.info("요청한 장소를 찾을 수 없습니다. googleId: {}. 빈 리뷰 목록을 반환합니다.", googleId);
+            return new ReviewListByPlaceDTO();
+        }
+
+        Place place = optionalPlace.get();
         log.info("장소의 리뷰 목록 불러오기 - 장소명: {}", place.getName());
 
         Page<Review> reviewPage = reviewRepository.findByPlaceAndUser(place, user, pageable);
-
         log.info("장소의 리뷰 목록 조회 완료 - 리뷰 총 {}개", reviewPage.getTotalElements());
 
         return new ReviewListByPlaceDTO(place, reviewPage);
