@@ -9,7 +9,7 @@ import java.math.BigDecimal;
 public class VisitedPlaceResponseDTO {
 
     private final Long placeId;
-    private final String name;
+    private final String placeName;
     private final String address;
     private final String googleId;
     private final BigDecimal xCoordinate;
@@ -17,7 +17,7 @@ public class VisitedPlaceResponseDTO {
 
     public VisitedPlaceResponseDTO(Place place){
         this.placeId = place.getId();
-        this.name = place.getName();
+        this.placeName = place.getName();
         this.address = place.getAddress();
         this.googleId = place.getGoogleId();
         this.xCoordinate = place.getXCoordinate();
