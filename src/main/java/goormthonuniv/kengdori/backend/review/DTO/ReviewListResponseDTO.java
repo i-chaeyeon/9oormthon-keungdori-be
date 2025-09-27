@@ -15,6 +15,7 @@ public class ReviewListResponseDTO {
     private final String memo;
     private final HashtagInfoDTO mainTag;
     private final List<HashtagInfoDTO> subTags;
+    private final String imageUrl;
 
     public ReviewListResponseDTO(Review review) {
         this.reviewId = review.getId();
@@ -33,5 +34,7 @@ public class ReviewListResponseDTO {
                 .filter(ph -> !ph.getIsMain())
                 .map(ph -> new HashtagInfoDTO(ph.getUserHashtag()))
                 .collect(Collectors.toList());
+
+        this.imageUrl = review.getImageUrl();
     }
 }
