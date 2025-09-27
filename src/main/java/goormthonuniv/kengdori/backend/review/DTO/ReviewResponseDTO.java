@@ -15,7 +15,7 @@ public class ReviewResponseDTO {
     private final Long placeId;
     private final Long reviewId;
 
-    private final String name;
+    private final String placeName;
 
     private final Double rating;
     private final String mainTag;

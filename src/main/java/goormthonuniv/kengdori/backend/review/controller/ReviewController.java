@@ -33,6 +33,7 @@ public class ReviewController {
         return userService.findUserByKakaoId(kakaoId);
     }
 
+    // REQUEST, RESPONSE DTO 수정 필요
     @PostMapping("")
     public ResponseEntity<ReviewResponseDTO> postNewReview(
             @RequestHeader("Authorization") String authHeader,
@@ -43,6 +44,7 @@ public class ReviewController {
         return ResponseEntity.status(201).body(response);
     }
 
+    // RESPONSE DTO 수정 필요
     @PatchMapping("/{reviewId}")
     public ResponseEntity<ReviewResponseDTO> editReview(
             @RequestHeader("Authorization") String authHeader,

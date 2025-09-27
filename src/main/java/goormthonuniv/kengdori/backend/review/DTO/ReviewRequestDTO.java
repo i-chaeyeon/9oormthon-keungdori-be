@@ -11,7 +11,7 @@ import java.util.List;
 @Getter
 public class ReviewRequestDTO {
 
-    private final String name;
+    private final String placeName;
     private final String address;
     private final String googleId;
     private final BigDecimal xCoordinate;
@@ -25,7 +25,7 @@ public class ReviewRequestDTO {
 
     public Place toPlace(){
         return Place.builder()
-                .name(this.name)
+                .name(this.placeName)
                 .address(this.address)
                 .googleId(this.googleId)
                 .xCoordinate(this.xCoordinate)
