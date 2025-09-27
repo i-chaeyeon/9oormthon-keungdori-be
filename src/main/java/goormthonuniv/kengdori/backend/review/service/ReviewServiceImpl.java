@@ -42,7 +42,7 @@ public class ReviewServiceImpl implements ReviewService{
     @Override
     @Transactional
     public ReviewResponseDTO createReview(User user, ReviewRequestDTO dto) {
-        log.info("리뷰 생성 시도 - userId: {}, placeName: {}", user.getId(), dto.getName());
+        log.info("리뷰 생성 시도 - userId: {}, placeName: {}", user.getId(), dto.getPlaceName());
 
         Place place = placeService.findOrCreatePlace(dto.toPlace());
 
