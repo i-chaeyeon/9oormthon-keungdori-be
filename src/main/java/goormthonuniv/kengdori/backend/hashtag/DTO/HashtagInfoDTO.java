@@ -1,6 +1,6 @@
 package goormthonuniv.kengdori.backend.hashtag.DTO;
 
-import goormthonuniv.kengdori.backend.hashtag.domain.UserHashtag;
+import goormthonuniv.kengdori.backend.domain.UserHashtag;
 import lombok.Getter;
 
 @Getter

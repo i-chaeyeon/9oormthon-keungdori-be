@@ -1,7 +1,7 @@
 package goormthonuniv.kengdori.backend.place.repository;
 
-import goormthonuniv.kengdori.backend.place.domain.Place;
-import goormthonuniv.kengdori.backend.user.domain.User;
+import goormthonuniv.kengdori.backend.domain.Place;
+import goormthonuniv.kengdori.backend.domain.User;
 import java.math.BigDecimal;
 import java.util.List;
 import org.springframework.data.domain.Page;

@@ -1,9 +1,8 @@
 package goormthonuniv.kengdori.backend.place.service;
 
 import goormthonuniv.kengdori.backend.place.DTO.BoundedPlaceResponseDTO;
-import goormthonuniv.kengdori.backend.place.domain.Place;
+import goormthonuniv.kengdori.backend.domain.Place;
 import goormthonuniv.kengdori.backend.place.repository.PlaceRepository;
-import goormthonuniv.kengdori.backend.review.domain.Review;
 import goormthonuniv.kengdori.backend.review.repository.ReviewRepository;
 import java.math.BigDecimal;
 import java.util.Comparator;

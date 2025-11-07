@@ -2,8 +2,8 @@ package goormthonuniv.kengdori.backend.hashtag.service;
 
 import goormthonuniv.kengdori.backend.hashtag.DTO.HashtagRequestDTO;
 import goormthonuniv.kengdori.backend.hashtag.DTO.HashtagResponseDTO;
-import goormthonuniv.kengdori.backend.user.domain.User;
-import goormthonuniv.kengdori.backend.hashtag.domain.UserHashtag;
+import goormthonuniv.kengdori.backend.domain.User;
+import goormthonuniv.kengdori.backend.domain.UserHashtag;
 import goormthonuniv.kengdori.backend.hashtag.repository.UserHashtagRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

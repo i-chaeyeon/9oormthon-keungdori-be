@@ -2,8 +2,7 @@ package goormthonuniv.kengdori.backend.review.controller;
 
 import goormthonuniv.kengdori.backend.global.DTO.ReadResponseDTO;
 import goormthonuniv.kengdori.backend.global.JWT.JwtUtil;
-import goormthonuniv.kengdori.backend.place.domain.Place;
-import goormthonuniv.kengdori.backend.user.domain.User;
+import goormthonuniv.kengdori.backend.domain.User;
 import goormthonuniv.kengdori.backend.global.exception.NoResultsFoundException;
 import goormthonuniv.kengdori.backend.place.DTO.VisitedPlaceResponseDTO;
 import goormthonuniv.kengdori.backend.review.DTO.*;
@@ -17,8 +16,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.Optional;
 
 @Slf4j
 @RequiredArgsConstructor

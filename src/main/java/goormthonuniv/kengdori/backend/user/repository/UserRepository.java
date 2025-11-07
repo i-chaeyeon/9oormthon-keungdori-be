@@ -1,6 +1,6 @@
 package goormthonuniv.kengdori.backend.user.repository;
 
-import goormthonuniv.kengdori.backend.user.domain.User;
+import goormthonuniv.kengdori.backend.domain.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;

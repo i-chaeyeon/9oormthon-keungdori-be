@@ -1,4 +1,4 @@
-package goormthonuniv.kengdori.backend.user.domain;
+package goormthonuniv.kengdori.backend.domain;
 
 import jakarta.persistence.*;
 import lombok.*;

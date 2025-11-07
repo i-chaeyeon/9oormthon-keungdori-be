@@ -1,8 +1,8 @@
 package goormthonuniv.kengdori.backend.review.repository;
 
-import goormthonuniv.kengdori.backend.place.domain.Place;
-import goormthonuniv.kengdori.backend.review.domain.Review;
-import goormthonuniv.kengdori.backend.user.domain.User;
+import goormthonuniv.kengdori.backend.domain.Place;
+import goormthonuniv.kengdori.backend.domain.Review;
+import goormthonuniv.kengdori.backend.domain.User;
 import java.math.BigDecimal;
 import java.util.List;
 import org.springframework.data.domain.Page;

@@ -1,8 +1,8 @@
 package goormthonuniv.kengdori.backend.hashtag.repository;
 
-import goormthonuniv.kengdori.backend.place.domain.Place;
-import goormthonuniv.kengdori.backend.hashtag.domain.PlaceHashtag;
-import goormthonuniv.kengdori.backend.user.domain.User;
+import goormthonuniv.kengdori.backend.domain.Place;
+import goormthonuniv.kengdori.backend.domain.PlaceHashtag;
+import goormthonuniv.kengdori.backend.domain.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface PlaceHashtagRepository extends JpaRepository<PlaceHashtag, Long> {

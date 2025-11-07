@@ -1,7 +1,7 @@
 package goormthonuniv.kengdori.backend.hashtag.controller;
 
 import goormthonuniv.kengdori.backend.global.JWT.JwtUtil;
-import goormthonuniv.kengdori.backend.user.domain.User;
+import goormthonuniv.kengdori.backend.domain.User;
 import goormthonuniv.kengdori.backend.hashtag.DTO.HashtagRequestDTO;
 import goormthonuniv.kengdori.backend.hashtag.DTO.HashtagResponseDTO;
 import goormthonuniv.kengdori.backend.hashtag.service.HashtagService;

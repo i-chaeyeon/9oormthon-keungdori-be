@@ -3,7 +3,7 @@ package goormthonuniv.kengdori.backend.user.controller;
 import goormthonuniv.kengdori.backend.user.DTO.UserRequestDTO;
 import goormthonuniv.kengdori.backend.user.DTO.UserResponseDTO;
 import goormthonuniv.kengdori.backend.global.JWT.JwtUtil;
-import goormthonuniv.kengdori.backend.user.domain.User;
+import goormthonuniv.kengdori.backend.domain.User;
 import goormthonuniv.kengdori.backend.user.service.UserServiceImpl;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

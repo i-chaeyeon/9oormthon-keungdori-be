@@ -1,8 +1,8 @@
 package goormthonuniv.kengdori.backend.review.DTO;
 
-import goormthonuniv.kengdori.backend.place.domain.Place;
-import goormthonuniv.kengdori.backend.hashtag.domain.PlaceHashtag;
-import goormthonuniv.kengdori.backend.review.domain.Review;
+import goormthonuniv.kengdori.backend.domain.Place;
+import goormthonuniv.kengdori.backend.domain.PlaceHashtag;
+import goormthonuniv.kengdori.backend.domain.Review;
 import goormthonuniv.kengdori.backend.hashtag.DTO.HashtagInfoDTO;
 import lombok.Getter;
 

@@ -1,6 +1,6 @@
 package goormthonuniv.kengdori.backend.review.DTO;
 
-import goormthonuniv.kengdori.backend.review.domain.Review;
+import goormthonuniv.kengdori.backend.domain.Review;
 import lombok.Getter;
 
 @Getter

@@ -1,7 +1,7 @@
 package goormthonuniv.kengdori.backend.hashtag.repository;
 
-import goormthonuniv.kengdori.backend.user.domain.User;
-import goormthonuniv.kengdori.backend.hashtag.domain.UserHashtag;
+import goormthonuniv.kengdori.backend.domain.User;
+import goormthonuniv.kengdori.backend.domain.UserHashtag;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;

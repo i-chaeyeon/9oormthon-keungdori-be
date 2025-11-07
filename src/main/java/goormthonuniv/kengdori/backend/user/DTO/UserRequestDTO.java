@@ -1,6 +1,6 @@
 package goormthonuniv.kengdori.backend.user.DTO;
 
-import goormthonuniv.kengdori.backend.user.domain.User;
+import goormthonuniv.kengdori.backend.domain.User;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 

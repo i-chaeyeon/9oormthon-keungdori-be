@@ -2,7 +2,7 @@ package goormthonuniv.kengdori.backend.user.service;
 
 import goormthonuniv.kengdori.backend.user.DTO.UserRequestDTO;
 import goormthonuniv.kengdori.backend.user.DTO.UserResponseDTO;
-import goormthonuniv.kengdori.backend.user.domain.User;
+import goormthonuniv.kengdori.backend.domain.User;
 
 public interface UserService {
 

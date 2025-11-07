@@ -1,6 +1,5 @@
-package goormthonuniv.kengdori.backend.hashtag.domain;
+package goormthonuniv.kengdori.backend.domain;
 
-import goormthonuniv.kengdori.backend.place.domain.Place;
 import jakarta.persistence.*;
 import lombok.*;
 

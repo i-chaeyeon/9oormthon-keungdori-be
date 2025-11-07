@@ -1,8 +1,8 @@
 package goormthonuniv.kengdori.backend.review.DTO;
 
 import goormthonuniv.kengdori.backend.place.DTO.PlaceInfoDTO;
-import goormthonuniv.kengdori.backend.place.domain.Place;
-import goormthonuniv.kengdori.backend.review.domain.Review;
+import goormthonuniv.kengdori.backend.domain.Place;
+import goormthonuniv.kengdori.backend.domain.Review;
 import goormthonuniv.kengdori.backend.global.DTO.PageInfoDTO;
 import lombok.Getter;
 import org.springframework.data.domain.Page;

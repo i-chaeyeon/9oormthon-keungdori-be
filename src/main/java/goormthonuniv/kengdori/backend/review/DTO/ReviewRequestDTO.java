@@ -1,6 +1,6 @@
 package goormthonuniv.kengdori.backend.review.DTO;
 
-import goormthonuniv.kengdori.backend.place.domain.Place;
+import goormthonuniv.kengdori.backend.domain.Place;
 import lombok.*;
 
 import java.math.BigDecimal;

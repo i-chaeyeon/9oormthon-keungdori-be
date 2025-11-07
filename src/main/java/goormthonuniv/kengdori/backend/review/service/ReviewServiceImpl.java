@@ -1,19 +1,19 @@
 package goormthonuniv.kengdori.backend.review.service;
 
 import goormthonuniv.kengdori.backend.global.exception.UnauthorizedException;
-import goormthonuniv.kengdori.backend.hashtag.domain.PlaceHashtag;
-import goormthonuniv.kengdori.backend.hashtag.domain.UserHashtag;
+import goormthonuniv.kengdori.backend.domain.PlaceHashtag;
+import goormthonuniv.kengdori.backend.domain.UserHashtag;
 import goormthonuniv.kengdori.backend.hashtag.repository.PlaceHashtagRepository;
 import goormthonuniv.kengdori.backend.place.DTO.VisitedPlaceResponseDTO;
-import goormthonuniv.kengdori.backend.place.domain.Place;
+import goormthonuniv.kengdori.backend.domain.Place;
 import goormthonuniv.kengdori.backend.place.repository.PlaceRepository;
 import goormthonuniv.kengdori.backend.review.DTO.*;
-import goormthonuniv.kengdori.backend.review.domain.Review;
+import goormthonuniv.kengdori.backend.domain.Review;
 import goormthonuniv.kengdori.backend.review.repository.ReviewRepository;
 import goormthonuniv.kengdori.backend.hashtag.repository.UserHashtagRepository;
 import goormthonuniv.kengdori.backend.hashtag.service.HashtagService;
 import goormthonuniv.kengdori.backend.place.service.PlaceService;
-import goormthonuniv.kengdori.backend.user.domain.User;
+import goormthonuniv.kengdori.backend.domain.User;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
