@@ -25,6 +25,14 @@ public interface ReviewRepository extends JpaRepository<Review, Long> {
 
     Optional<Review> findTopByPlaceOrderByCreatedAtDesc(Place place);
 
+    @Query("SELECT r FROM Review r " +
+            "JOIN FETCH r.user " +
+            "JOIN FETCH r.place " +
+            "LEFT JOIN FETCH r.place.placeHashtagList ph " +
+            "LEFT JOIN FETCH ph.userHashtag " +
+            "WHERE r.id = :reviewId")
+    Optional<Review> findWithUserAndPlaceAndHashtagsById(@Param("reviewId") Long reviewId);
+
     @Query("""
     SELECT r
     FROM Review r

@@ -8,7 +8,7 @@ import lombok.*;
 @Table
 @Builder
 @AllArgsConstructor
-@NoArgsConstructor(access= AccessLevel.PROTECTED)
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
 @Setter
 public class PlaceHashtag {
@@ -22,8 +22,12 @@ public class PlaceHashtag {
     private Place place;
 
     @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", nullable = false)
+    private User user;
+
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_hashtag_id", nullable = false)
     private UserHashtag userHashtag;
 
-    private Boolean isMain; // 대표 해시태그 여부
+    private Boolean isMain;
 }

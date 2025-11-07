@@ -15,7 +15,9 @@ import goormthonuniv.kengdori.backend.hashtag.service.HashtagService;
 import goormthonuniv.kengdori.backend.place.service.PlaceService;
 import goormthonuniv.kengdori.backend.domain.User;
 import jakarta.persistence.EntityNotFoundException;
+import java.nio.file.AccessDeniedException;
 import java.time.LocalDateTime;
+import java.util.Collections;
 import java.util.Objects;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -49,20 +51,25 @@ public class ReviewServiceImpl implements ReviewService{
 
         Place place = placeService.findOrCreatePlace(dto.toPlace());
 
-        log.info("생성된 장소 - userId: {}, place: {}", user.getId(), place.getName());
-        log.info("리뷰 생성 시도 - userId: {}, maintag {}", user.getId(), dto.getMainTag());
+        placeHashtagRepository.deleteByPlaceAndUser(place, user);
 
-        UserHashtag mainTag = hashtagService.findUserHashtag(user, dto.getMainTag());
-        PlaceHashtag mainRel = PlaceHashtag.builder()
-                .place(place)
-                .userHashtag(mainTag)
-                .isMain(true)
-                .build();
-        placeHashtagRepository.save(mainRel);
+        List<String> subTags = dto.getSubTags() != null ? dto.getSubTags() : Collections.emptyList();
 
-        List<PlaceHashtag> subRelList = dto.getSubTags().stream()
+        UserHashtag mainTag = null;
+        if (dto.getMainTag() != null) {
+            mainTag = hashtagService.findUserHashtag(user, dto.getMainTag());
+            PlaceHashtag mainRel = PlaceHashtag.builder()
+                    .place(place)
+                    .user(user)
+                    .userHashtag(mainTag)
+                    .isMain(true)
+                    .build();
+            placeHashtagRepository.save(mainRel);
+        }
+        List<PlaceHashtag> subRelList = subTags.stream()
                 .map(tag -> PlaceHashtag.builder()
                         .place(place)
+                        .user(user)
                         .userHashtag(hashtagService.findUserHashtag(user, tag))
                         .isMain(false)
                         .build())
@@ -85,13 +92,14 @@ public class ReviewServiceImpl implements ReviewService{
                 review.getId(),
                 place.getName(),
                 review.getRating(),
-                mainTag.getHashtag(),
-                dto.getSubTags(),
+                mainTag != null ? mainTag.getHashtag() : null,
+                subTags,
                 review.getImageUrl(),
                 review.getMemo(),
                 review.getCreatedAt()
         );
     }
+
 
     @Override
     @Transactional
@@ -107,53 +115,53 @@ public class ReviewServiceImpl implements ReviewService{
         review.setMemo(dto.getMemo());
 
         Place place = review.getPlace();
-        // 전부 지우고 다시 설정
-        placeHashtagRepository.deleteByPlaceAndUserHashtag_User(place, user);
+
+        placeHashtagRepository.deleteByPlaceAndUser(place, user);
 
         List<String> subTags = dto.getSubTags() != null ? dto.getSubTags() : new ArrayList<>();
         String mainTagStr = dto.getMainTag();
 
         List<String> allTags = new ArrayList<>(subTags);
-        if (mainTagStr != null) {
-            allTags.add(mainTagStr);
-        }
-
+        if (mainTagStr != null) allTags.add(mainTagStr);
         allTags = allTags.stream().filter(Objects::nonNull).toList();
 
         List<UserHashtag> foundHashtags = userHashtagRepository.findByUserAndHashtagIn(user, allTags);
         if (foundHashtags.size() != allTags.stream().distinct().count()) {
             throw new EntityNotFoundException("존재하지 않는 해시태그가 포함되어 있습니다.");
         }
+
         Map<String, UserHashtag> hashtagMap = foundHashtags.stream()
                 .collect(Collectors.toMap(UserHashtag::getHashtag, tag -> tag));
 
-        UserHashtag mainTag = hashtagMap.get(dto.getMainTag());
-        PlaceHashtag mainRel = PlaceHashtag.builder()
-                .place(place)
-                .userHashtag(mainTag)
-                .isMain(true)
-                .build();
+        if (mainTagStr != null) {
+            PlaceHashtag mainRel = PlaceHashtag.builder()
+                    .place(place)
+                    .user(user)
+                    .userHashtag(hashtagMap.get(mainTagStr))
+                    .isMain(true)
+                    .build();
+            placeHashtagRepository.save(mainRel);
+        }
 
-        List<PlaceHashtag> subRelList = dto.getSubTags().stream()
+        List<PlaceHashtag> subRelList = subTags.stream()
                 .map(tagStr -> PlaceHashtag.builder()
                         .place(place)
+                        .user(user)
                         .userHashtag(hashtagMap.get(tagStr))
                         .isMain(false)
                         .build())
                 .toList();
-
-        List<PlaceHashtag> allPlaceHashtags = new ArrayList<>(subRelList);
-        allPlaceHashtags.add(mainRel);
-        placeHashtagRepository.saveAll(allPlaceHashtags);
+        placeHashtagRepository.saveAll(subRelList);
 
         log.info("리뷰 수정 완료 - reviewId: {}", reviewId);
+
         return new ReviewResponseDTO(
                 place.getId(),
                 review.getId(),
                 place.getName(),
                 review.getRating(),
-                mainTag.getHashtag(),
-                dto.getSubTags(),
+                mainTagStr,
+                subTags,
                 review.getImageUrl(),
                 review.getMemo(),
                 review.getCreatedAt()
@@ -165,20 +173,21 @@ public class ReviewServiceImpl implements ReviewService{
     public void deleteReview(User user, Long reviewId) {
 
         log.info("리뷰 삭제 시도 - reviewId: {}, userId: {}", reviewId, user.getId());
+
         Review review = reviewRepository.findById(reviewId)
                 .orElseThrow(() -> new EntityNotFoundException("Review not found"));
+
         Place place = review.getPlace();
 
-        // 사용자가 쓴 리뷰인지 확인해줘야되려나
-
         log.info("리뷰에 연결된 해시태그 삭제 - placeId: {}, userId: {}", place.getId(), user.getId());
-        placeHashtagRepository.deleteByPlaceAndUserHashtag_User(place, user);
+        placeHashtagRepository.deleteByPlaceAndUser(place, user);
 
         log.info("리뷰 엔티티 삭제 - reviewId: {}", reviewId);
         reviewRepository.delete(review);
 
         log.info("리뷰 삭제 완료 - reviewId: {}", reviewId);
     }
+
 
     @Override
     public Page<VisitedPlaceResponseDTO> searchMyReviewedPlaces(User user, String keyword, Pageable pageable) {
@@ -227,7 +236,7 @@ public class ReviewServiceImpl implements ReviewService{
 
         log.info("특정 리뷰의 상세보기 시작 - 리뷰 아이디: {}", reviewId);
 
-        Review review = reviewRepository.findById(reviewId)
+        Review review = reviewRepository.findWithUserAndPlaceAndHashtagsById(reviewId)
                 .orElseThrow(() -> new EntityNotFoundException("해당 리뷰 없음. 아이디: " + reviewId));
 
         if (!review.getUser().getId().equals(user.getId())) {
