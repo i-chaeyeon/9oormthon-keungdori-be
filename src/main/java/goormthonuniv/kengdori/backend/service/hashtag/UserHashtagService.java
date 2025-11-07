@@ -3,7 +3,11 @@ package goormthonuniv.kengdori.backend.service.hashtag;
 import goormthonuniv.kengdori.backend.domain.hashtag.UserHashtag;
 import goormthonuniv.kengdori.backend.domain.hashtag.UserHashtagRepository;
 import goormthonuniv.kengdori.backend.domain.user.User;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
 
+@Service
+@RequiredArgsConstructor
 public class UserHashtagService {
 
     private UserHashtagRepository userHashtagRepository;

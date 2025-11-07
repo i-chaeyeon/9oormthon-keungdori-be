@@ -1,5 +1,6 @@
 package goormthonuniv.kengdori.backend.domain.review;
 
+import goormthonuniv.kengdori.backend.domain.place.Place;
 import goormthonuniv.kengdori.backend.domain.user.User;
 import goormthonuniv.kengdori.backend.domain.hashtag.UserHashtag;
 import java.util.List;
@@ -18,4 +19,7 @@ public interface ReviewHashtagRepository extends JpaRepository<ReviewHashtag, Lo
     Optional<ReviewHashtag> findByReviewIdAndUserHashtag(Long reviewId, UserHashtag hashtag);
 
     void deleteByReviewAndUser(Review review, User user);
+
+    @Query("SELECT rh FROM ReviewHashtag rh WHERE rh.review.place = :place AND rh.user = :user")
+    List<ReviewHashtag> findByPlaceAndUser(@Param("place") Place place, @Param("user") User user);
 }

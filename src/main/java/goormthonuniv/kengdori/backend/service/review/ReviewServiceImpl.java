@@ -13,21 +13,16 @@ import goormthonuniv.kengdori.backend.dto.review.ReviewUpdateRequestDTO;
 import goormthonuniv.kengdori.backend.global.DTO.PageInfoDTO;
 import goormthonuniv.kengdori.backend.global.exception.UnauthorizedException;
 import goormthonuniv.kengdori.backend.domain.hashtag.UserHashtag;
-import goormthonuniv.kengdori.backend.domain.hashtag.PlaceHashtagRepository;
 import goormthonuniv.kengdori.backend.dto.place.VisitedPlaceResponseDTO;
 import goormthonuniv.kengdori.backend.domain.place.Place;
 import goormthonuniv.kengdori.backend.domain.place.PlaceRepository;
 import goormthonuniv.kengdori.backend.domain.review.Review;
 import goormthonuniv.kengdori.backend.domain.review.ReviewRepository;
 import goormthonuniv.kengdori.backend.domain.hashtag.UserHashtagRepository;
-import goormthonuniv.kengdori.backend.service.hashtag.HashtagService;
 import goormthonuniv.kengdori.backend.service.hashtag.UserHashtagService;
-import goormthonuniv.kengdori.backend.service.place.PlaceService;
 import goormthonuniv.kengdori.backend.domain.user.User;
 import jakarta.persistence.EntityNotFoundException;
 import java.time.LocalDateTime;
-import java.util.Collections;
-import java.util.Objects;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -35,11 +30,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Slf4j
 @RequiredArgsConstructor

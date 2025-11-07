@@ -1,9 +1,16 @@
 package goormthonuniv.kengdori.backend.service.place;
 
+import goormthonuniv.kengdori.backend.domain.place.PlaceMainTag;
+import goormthonuniv.kengdori.backend.domain.place.PlaceMainTagRepository;
+import goormthonuniv.kengdori.backend.domain.review.ReviewHashtag;
+import goormthonuniv.kengdori.backend.domain.review.ReviewHashtagRepository;
+import goormthonuniv.kengdori.backend.domain.user.User;
+import goormthonuniv.kengdori.backend.domain.user.UserRepository;
 import goormthonuniv.kengdori.backend.dto.place.BoundedPlaceResponseDTO;
 import goormthonuniv.kengdori.backend.domain.place.Place;
 import goormthonuniv.kengdori.backend.domain.place.PlaceRepository;
 import goormthonuniv.kengdori.backend.domain.review.ReviewRepository;
+import jakarta.persistence.EntityNotFoundException;
 import java.math.BigDecimal;
 import java.util.Comparator;
 import java.util.List;
@@ -16,6 +23,9 @@ import org.springframework.stereotype.Service;
 public class PlaceService {
 
     private final PlaceRepository placeRepository;
+    private final PlaceMainTagRepository placeMainTagRepository;
+    private final UserRepository userRepository;
+    private final ReviewHashtagRepository reviewHashtagRepository;
     private final ReviewRepository reviewRepository;
 
     public Place findOrCreatePlace(Place place){
@@ -29,9 +39,13 @@ public class PlaceService {
             BigDecimal minY, BigDecimal maxY,
             BigDecimal currentX, BigDecimal currentY
     ) {
+        // ✅ 1. 특정 범위 내 "사용자가 리뷰한 장소" 조회
         List<Place> places = placeRepository.findPlacesWithUserReviewsInBoundary(
                 userId, minX, maxX, minY, maxY
         );
+
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new EntityNotFoundException("사용자 없음"));
 
         return places.stream()
                 .map(place -> {
@@ -39,11 +53,20 @@ public class PlaceService {
                             place.getYCoordinate(), place.getXCoordinate(),
                             currentY, currentX
                     );
-                    return new BoundedPlaceResponseDTO(place, distance);
+                    PlaceMainTag mainTag = placeMainTagRepository
+                            .findByPlaceAndUser(place, user)
+                            .orElse(null);
+
+                    List<ReviewHashtag> subTags = reviewHashtagRepository
+                            .findByPlaceAndUser(place, user);
+
+                    // ✅ 5. DTO 생성 (리팩토링된 생성자 사용)
+                    return new BoundedPlaceResponseDTO(place, distance, mainTag, subTags);
                 })
                 .sorted(Comparator.comparing(BoundedPlaceResponseDTO::getDistance))
                 .collect(Collectors.toList());
     }
+
 
     private double calcDistance(BigDecimal lat1, BigDecimal lon1, BigDecimal lat2, BigDecimal lon2) {
         double R = 6371000; // 지구 반지름 (m)
