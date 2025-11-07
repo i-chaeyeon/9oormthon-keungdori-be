@@ -1,28 +1,30 @@
 package goormthonuniv.kengdori.backend.domain;
 
 import jakarta.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
 import lombok.*;
 
 import java.time.LocalDateTime;
 
 @Entity
-@Table
-@Builder
-@AllArgsConstructor
-@NoArgsConstructor(access= AccessLevel.PROTECTED)
+@Table(name = "review")
 @Getter
 @Setter
+@AllArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@Builder
 public class Review {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY) // 여러 메모를 하나의 사용자가 작성
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
-    @ManyToOne(fetch = FetchType.LAZY) // 여러 메모를 하나의 장소에 대해 작성
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "place_id", nullable = false)
     private Place place;
 
@@ -30,10 +32,16 @@ public class Review {
 
     @Column(columnDefinition = "TEXT")
     private String memo;
+
+    @Column(nullable = false)
     private Double rating;
 
     @Column(columnDefinition = "TEXT")
     private String imageUrl;
+
+    @Builder.Default
+    @OneToMany(mappedBy = "review", cascade = CascadeType.REMOVE)
+    private List<ReviewHashtag> hashtags = new ArrayList<>();
 
     @PrePersist
     protected void onCreate(){

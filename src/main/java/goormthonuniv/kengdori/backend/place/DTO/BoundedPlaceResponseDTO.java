@@ -1,7 +1,6 @@
 package goormthonuniv.kengdori.backend.place.DTO;
 
 import goormthonuniv.kengdori.backend.hashtag.DTO.HashtagInfoDTO;
-import goormthonuniv.kengdori.backend.domain.PlaceHashtag;
 import goormthonuniv.kengdori.backend.domain.Place;
 import java.math.BigDecimal;
 import java.util.List;

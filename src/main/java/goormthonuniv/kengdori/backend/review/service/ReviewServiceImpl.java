@@ -1,7 +1,6 @@
 package goormthonuniv.kengdori.backend.review.service;
 
 import goormthonuniv.kengdori.backend.global.exception.UnauthorizedException;
-import goormthonuniv.kengdori.backend.domain.PlaceHashtag;
 import goormthonuniv.kengdori.backend.domain.UserHashtag;
 import goormthonuniv.kengdori.backend.hashtag.repository.PlaceHashtagRepository;
 import goormthonuniv.kengdori.backend.place.DTO.VisitedPlaceResponseDTO;
@@ -15,7 +14,6 @@ import goormthonuniv.kengdori.backend.hashtag.service.HashtagService;
 import goormthonuniv.kengdori.backend.place.service.PlaceService;
 import goormthonuniv.kengdori.backend.domain.User;
 import jakarta.persistence.EntityNotFoundException;
-import java.nio.file.AccessDeniedException;
 import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.Objects;

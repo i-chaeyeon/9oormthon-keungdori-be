@@ -8,33 +8,39 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Entity
-@Table
-@Builder
-@AllArgsConstructor
-@NoArgsConstructor(access=AccessLevel.PROTECTED)
-@Getter
-@Setter
+@Table(
+        name = "place",
+        indexes = {
+                @Index(name = "idx_place_google_id", columnList = "googleId"),
+                @Index(name = "idx_place_xy", columnList = "x_coordinate,y_coordinate")
+        },
+        uniqueConstraints = {
+                @UniqueConstraint(name = "uk_place_google_id", columnNames = {"googleId"})
+        }
+)
+@Getter @Setter
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor @Builder
 public class Place {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String name; // 장소명
-    private String address; // 장소 주소
-    private String googleId; // 구글 API에서 장소의 id
+    private String name;
+    private String address;
 
-    @Column(precision = 10, scale = 6)
-    private BigDecimal xCoordinate; // x 좌표
-    @Column(precision = 10, scale = 6)
-    private BigDecimal yCoordinate; // y 좌표
+    @Column(nullable = false)
+    private String googleId;
 
+    @Column(name = "x_coordinate", precision = 10, scale = 6, nullable = false)
+    private BigDecimal xCoordinate;
 
-    // Place 삭제 시 Review와 Hashtag 전부 삭제 (cascade)
-    @Builder.Default
+    @Column(name = "y_coordinate", precision = 10, scale = 6, nullable = false)
+    private BigDecimal yCoordinate;
+
+    // Place 삭제 시 관련 리뷰 전부 삭제
     @OneToMany(mappedBy = "place", cascade = CascadeType.REMOVE, orphanRemoval = true)
-    private List<Review> reviewList = new ArrayList<>();
-
     @Builder.Default
-    @OneToMany(mappedBy = "place", cascade = CascadeType.REMOVE, orphanRemoval = true)
-    private List<PlaceHashtag> placeHashtagList = new ArrayList<>();
+    private List<Review> reviews = new ArrayList<>();
 }

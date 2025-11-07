@@ -1,17 +1,23 @@
 package goormthonuniv.kengdori.backend.domain;
 
+import jakarta.persistence.Entity;
 import jakarta.persistence.*;
 import lombok.*;
 
-// 어떤 장소에 어떤 해시태그가 달려있는지
 @Entity
-@Table
-@Builder
-@AllArgsConstructor
+@Table(
+        name = "place_main_tag",
+        uniqueConstraints = {
+                @UniqueConstraint(
+                        name = "uk_place_user",
+                        columnNames = {"place_id", "user_id"}
+                )
+        }
+)
+@Getter @Setter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@Getter
-@Setter
-public class PlaceHashtag {
+@AllArgsConstructor @Builder
+public class PlaceMainTag {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -28,6 +34,4 @@ public class PlaceHashtag {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_hashtag_id", nullable = false)
     private UserHashtag userHashtag;
-
-    private Boolean isMain;
 }
