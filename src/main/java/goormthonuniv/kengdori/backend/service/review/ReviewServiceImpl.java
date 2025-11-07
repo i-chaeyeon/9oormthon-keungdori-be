@@ -62,6 +62,8 @@ public class ReviewServiceImpl implements ReviewService{
                 .build();
         reviewRepository.save(review);
 
+        log.info("dto subtag {}, dto maintag: {}", dto.getSubTags(), dto.getMainTag());
+
         if (dto.getSubTags() != null) {
             for (String tagName : dto.getSubTags()) {
                 UserHashtag userTag = userHashtagRepository
@@ -75,6 +77,7 @@ public class ReviewServiceImpl implements ReviewService{
                         .isMain(false)
                         .build();
                 reviewHashtagRepository.save(reviewHashtag);
+                review.getHashtags().add(reviewHashtag);
             }
         }
 
@@ -234,6 +237,7 @@ public class ReviewServiceImpl implements ReviewService{
                 .orElse(null);
 
         List<String> subTags = review.getHashtags().stream()
+                .filter(rh -> Boolean.FALSE.equals(rh.getIsMain()))
                 .map(rh -> rh.getUserHashtag().getHashtag())
                 .toList();
 

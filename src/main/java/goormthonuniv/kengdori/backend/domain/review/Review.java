@@ -49,4 +49,10 @@ public class Review {
     protected void onCreate(){
         this.createdAt = LocalDateTime.now();
     }
+
+    public void addHashtag(ReviewHashtag reviewHashtag) {
+        this.hashtags.add(reviewHashtag);
+        reviewHashtag.setReview(this);
+    }
+
 }
