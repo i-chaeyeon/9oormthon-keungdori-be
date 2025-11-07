@@ -5,6 +5,7 @@ import goormthonuniv.kengdori.backend.hashtag.DTO.HashtagResponseDTO;
 import goormthonuniv.kengdori.backend.domain.User;
 import goormthonuniv.kengdori.backend.domain.UserHashtag;
 import goormthonuniv.kengdori.backend.hashtag.repository.UserHashtagRepository;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -55,10 +56,16 @@ public class HashtagService {
 
     private UserHashtag createUserHashtag(User user, String hashtag) {
 
-        log.info("신규 해시태그 생성 - userId: {}, hashtag: '{}'", user.getId(), hashtag);
+        log.info("신규 해시태그 생성 시도 - userId: {}, hashtag: '{}'", user.getId(), hashtag);
 
-        if (hashtag.startsWith("#")) {
-            hashtag = hashtag.substring(1);
+        if (hashtag == null || hashtag.trim().isEmpty()) {
+            throw new IllegalArgumentException("해시태그는 빈 문자열일 수 없습니다.");
+        }
+
+        Optional<UserHashtag> existing = userHashtagRepository.findByUserAndHashtag(user, hashtag);
+        if (existing.isPresent()) {
+            log.info("이미 존재하는 해시태그 재사용 - userId: {}, hashtag: '{}'", user.getId(), hashtag);
+            return existing.get();
         }
 
         final String defaultBackgroundColor = "#adadad";
