@@ -15,6 +15,7 @@ import goormthonuniv.kengdori.backend.hashtag.service.HashtagService;
 import goormthonuniv.kengdori.backend.place.service.PlaceService;
 import goormthonuniv.kengdori.backend.domain.User;
 import jakarta.persistence.EntityNotFoundException;
+import java.time.LocalDateTime;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -226,5 +227,10 @@ public class ReviewServiceImpl implements ReviewService{
         }
 
         return new ReviewDetailsResponseDTO(review);
+    }
+
+    public boolean hasReviewWithin2Weeks(Long userId) {
+        LocalDateTime twoWeeksAgo = LocalDateTime.now().minusWeeks(2);
+        return reviewRepository.existsByUserIdAndCreatedAtAfter(userId, twoWeeksAgo);
     }
 }

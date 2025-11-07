@@ -4,6 +4,7 @@ import goormthonuniv.kengdori.backend.domain.Place;
 import goormthonuniv.kengdori.backend.domain.Review;
 import goormthonuniv.kengdori.backend.domain.User;
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.List;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -38,4 +39,5 @@ public interface ReviewRepository extends JpaRepository<Review, Long> {
             @Param("maxY") BigDecimal maxY
     );
 
+    boolean existsByUserIdAndCreatedAtAfter(Long userId, LocalDateTime dateTime);
 }

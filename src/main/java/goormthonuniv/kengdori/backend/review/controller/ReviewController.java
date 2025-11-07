@@ -8,6 +8,7 @@ import goormthonuniv.kengdori.backend.place.DTO.VisitedPlaceResponseDTO;
 import goormthonuniv.kengdori.backend.review.DTO.*;
 import goormthonuniv.kengdori.backend.review.service.ReviewServiceImpl;
 import goormthonuniv.kengdori.backend.user.service.UserServiceImpl;
+import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -133,5 +134,16 @@ public class ReviewController {
         ReviewDetailsResponseDTO response = reviewService.getReviewDetailsForUser(reviewId, user);
 
         return ResponseEntity.ok(response);
+    }
+
+    ///  킁도리 상태 업데이트
+    @GetMapping("/recent")
+    public ResponseEntity<?> hasRecentReview(@RequestHeader("Authorization") String authHeader){
+
+        User user = findUser(authHeader);
+
+        return ResponseEntity.ok(Map.of(
+                "hasReview", reviewService.hasReviewWithin2Weeks(user.getId())
+        ));
     }
 }
