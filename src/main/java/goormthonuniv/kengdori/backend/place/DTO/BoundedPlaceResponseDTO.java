@@ -16,6 +16,7 @@ import lombok.Getter;
 public class BoundedPlaceResponseDTO {
     private String placeName;
     private String address;
+    private String googleId;
     private BigDecimal xCoordinate;
     private BigDecimal yCoordinate;
     private HashtagInfoDTO mainTag;
@@ -25,6 +26,7 @@ public class BoundedPlaceResponseDTO {
     public BoundedPlaceResponseDTO(Place place, double distance) {
         this.placeName = place.getName();
         this.address = place.getAddress();
+        this.googleId = place.getGoogleId();
         this.xCoordinate = place.getXCoordinate();
         this.yCoordinate = place.getYCoordinate();
         this.mainTag = place.getPlaceHashtagList().stream()
