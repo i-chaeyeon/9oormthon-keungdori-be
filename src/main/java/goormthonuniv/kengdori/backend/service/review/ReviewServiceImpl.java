@@ -117,8 +117,15 @@ public class ReviewServiceImpl implements ReviewService{
     @Transactional(readOnly = true)
     public ReviewListByPlaceDTO findMyReviewsByPlace(String googleId, User user, Pageable pageable) {
 
-        Place place = placeRepository.findByGoogleId(googleId)
-                .orElseThrow(() -> new IllegalArgumentException("해당 장소가 존재하지 않습니다."));
+        Place place = placeRepository.findByGoogleId(googleId).orElse(null);
+
+        if (place == null) {
+            return new ReviewListByPlaceDTO(
+                    null,
+                    List.of(),
+                    new PageInfoDTO(Page.empty(pageable))
+            );
+        }
 
         Page<Review> reviewPage = reviewRepository.findByPlaceAndUser(place, user, pageable);
 

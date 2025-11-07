@@ -14,7 +14,7 @@ public class ReviewListByPlaceDTO {
     private final PageInfoDTO pageInfo;
 
     public ReviewListByPlaceDTO(Place place, List<ReviewListResponseDTO> reviews, PageInfoDTO pageInfo) {
-        this.placeInfo = new PlaceInfoDTO(place);
+        this.placeInfo = (place != null) ? new PlaceInfoDTO(place) : null;
         this.reviews = reviews;
         this.pageInfo = pageInfo;
     }
