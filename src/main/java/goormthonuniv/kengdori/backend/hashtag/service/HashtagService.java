@@ -84,21 +84,29 @@ public class HashtagService {
 
         log.info("해시태그 조회/생성 시도 - userId: {}, hashtag: '{}'", user.getId(), hashtag);
 
+        if (hashtag == null || hashtag.trim().isEmpty()) {
+            throw new IllegalArgumentException("해시태그는 비어 있을 수 없습니다.");
+        }
+
+        hashtag = hashtag.trim();
         if (hashtag.startsWith("#")) {
             hashtag = hashtag.substring(1);
         }
 
-        String finalHashtag = hashtag;
-        return userHashtagRepository.findByUserAndHashtag(user, hashtag)
+        final String normalizedHashtag = hashtag; // 람다에서 사용하려고 final
+
+        return userHashtagRepository.findByUserAndHashtag(user, normalizedHashtag)
                 .map(existing -> HashtagResponseDTO.builder()
                         .hashtag(existing.getHashtag())
                         .backgroundColor(existing.getBackgroundColor())
                         .fontColor(existing.getFontColor())
                         .status("exists")
-                        .build())
+                        .build()
+                )
                 .orElseGet(() -> {
-                    UserHashtag created = createUserHashtag(user, finalHashtag);
-                    log.info("created default color : {} ", created.getBackgroundColor());
+                    UserHashtag created = createUserHashtag(user, normalizedHashtag);
+                    log.info("신규 해시태그 생성 완료 - default color : {}", created.getBackgroundColor());
+
                     return HashtagResponseDTO.builder()
                             .hashtag(created.getHashtag())
                             .backgroundColor(created.getBackgroundColor())
