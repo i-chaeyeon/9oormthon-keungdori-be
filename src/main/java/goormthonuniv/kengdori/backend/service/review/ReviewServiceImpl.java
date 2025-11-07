@@ -45,6 +45,7 @@ public class ReviewServiceImpl implements ReviewService{
     private final UserHashtagService userHashtagService;
 
     @Override
+    @Transactional
     public ReviewResponseDTO createReview(User user, ReviewRequestDTO dto) {
 
         log.info("리뷰 생성 시도 - userId: {}, place: {}", user.getId(), dto.getPlaceName());
@@ -71,6 +72,7 @@ public class ReviewServiceImpl implements ReviewService{
                         .review(review)
                         .user(user)
                         .userHashtag(userTag)
+                        .isMain(false)
                         .build();
                 reviewHashtagRepository.save(reviewHashtag);
             }
@@ -208,6 +210,7 @@ public class ReviewServiceImpl implements ReviewService{
                                 .review(review)
                                 .user(user)
                                 .userHashtag(sub)
+                                .isMain(false)
                                 .build()
                 );
             }

@@ -16,8 +16,10 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+@Slf4j
 @RequiredArgsConstructor
 @Service
 public class PlaceService {
@@ -39,7 +41,6 @@ public class PlaceService {
             BigDecimal minY, BigDecimal maxY,
             BigDecimal currentX, BigDecimal currentY
     ) {
-        // ✅ 1. 특정 범위 내 "사용자가 리뷰한 장소" 조회
         List<Place> places = placeRepository.findPlacesWithUserReviewsInBoundary(
                 userId, minX, maxX, minY, maxY
         );
@@ -53,14 +54,13 @@ public class PlaceService {
                             place.getYCoordinate(), place.getXCoordinate(),
                             currentY, currentX
                     );
-                    PlaceMainTag mainTag = placeMainTagRepository
-                            .findByPlaceAndUser(place, user)
-                            .orElse(null);
+                    PlaceMainTag mainTag = placeMainTagRepository.findByPlaceAndUser(place, user).orElse(null);
+                    log.info("Place: {}, mainTag: {}", place.getName(), mainTag);
 
-                    List<ReviewHashtag> subTags = reviewHashtagRepository
-                            .findByPlaceAndUser(place, user);
+                    List<ReviewHashtag> subTags = reviewHashtagRepository.findByPlaceAndUser(place, user);
+                    log.info("SubTags 개수: {}", subTags.size());
 
-                    // ✅ 5. DTO 생성 (리팩토링된 생성자 사용)
+
                     return new BoundedPlaceResponseDTO(place, distance, mainTag, subTags);
                 })
                 .sorted(Comparator.comparing(BoundedPlaceResponseDTO::getDistance))

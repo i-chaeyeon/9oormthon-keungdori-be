@@ -39,8 +39,8 @@ public interface PlaceRepository extends JpaRepository<Place, Long> {
         SELECT DISTINCT p
         FROM Review r
         JOIN r.place p
-        JOIN r.hashtags rh
-        JOIN rh.userHashtag uh
+        LEFT JOIN r.hashtags rh
+        LEFT JOIN rh.userHashtag uh
         WHERE r.user.id = :userId
           AND p.xCoordinate BETWEEN :minX AND :maxX
           AND p.yCoordinate BETWEEN :minY AND :maxY
