@@ -16,6 +16,7 @@ import goormthonuniv.kengdori.backend.place.service.PlaceService;
 import goormthonuniv.kengdori.backend.domain.User;
 import jakarta.persistence.EntityNotFoundException;
 import java.time.LocalDateTime;
+import java.util.Objects;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -109,8 +110,15 @@ public class ReviewServiceImpl implements ReviewService{
         // 전부 지우고 다시 설정
         placeHashtagRepository.deleteByPlaceAndUserHashtag_User(place, user);
 
-        List<String> allTags = new ArrayList<>(dto.getSubTags());
-        allTags.add(dto.getMainTag());
+        List<String> subTags = dto.getSubTags() != null ? dto.getSubTags() : new ArrayList<>();
+        String mainTagStr = dto.getMainTag();
+
+        List<String> allTags = new ArrayList<>(subTags);
+        if (mainTagStr != null) {
+            allTags.add(mainTagStr);
+        }
+
+        allTags = allTags.stream().filter(Objects::nonNull).toList();
 
         List<UserHashtag> foundHashtags = userHashtagRepository.findByUserAndHashtagIn(user, allTags);
         if (foundHashtags.size() != allTags.stream().distinct().count()) {
