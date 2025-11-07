@@ -9,6 +9,7 @@ import goormthonuniv.kengdori.backend.user.service.UserServiceImpl;
 import java.math.BigDecimal;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -19,6 +20,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+@Slf4j
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/places")
@@ -41,16 +43,22 @@ public class PlaceController {
             @RequestParam BigDecimal minY,
             @RequestParam BigDecimal maxY,
             @RequestParam BigDecimal currentX,
-            @RequestParam BigDecimal currentY,
-            @RequestParam(defaultValue = "0") int page // 사용하지는 않음
+            @RequestParam BigDecimal currentY
+//            @RequestParam(defaultValue = "0") int page
     ) {
+        log.info("[nearme] authHeader={}, minX={}, maxX={}, minY={}, maxY={}, currentX={}, currentY={}",
+                authHeader, minX, maxX, minY, maxY, currentX, currentY);
+
         User user = findUser(authHeader);
-        Pageable pageable = PageRequest.of(page, 10, Sort.by("id").descending()); // 사용하지는 않음
+
+//        Pageable pageable = PageRequest.of(page, 10, Sort.by("id").descending());
 
         List<BoundedPlaceResponseDTO> places =
                 placeService.getReviewedPlacesInBoundary(
                         user.getId(), minX, maxX, minY, maxY, currentX, currentY
                 );
+
+        log.info("[nearme] userId={}, place count={}", user.getId(), places.size());
 
         BoundedPlaceListResponseDTO response = BoundedPlaceListResponseDTO.builder()
                 .userColor(user.getKengColor())
