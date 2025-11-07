@@ -23,7 +23,8 @@ spring:
 
 kakao:
   client_id: ${KAKAO_CLIENT_ID}
-  redirect_uri: https://keungdori-frontend-git-feat-login-park-junhyeongs-projects.vercel.app/oauth/callback
+  redirect_uri: http://localhost:8080/oauth/callback
+#  redirect_uri: https://keungdori-frontend-git-feat-login-park-junhyeongs-projects.vercel.app/oauth/callback
 
 jwt:
   access-token-expiration: 86400000 # 1일

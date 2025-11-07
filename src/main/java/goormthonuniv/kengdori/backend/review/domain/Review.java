@@ -37,7 +37,6 @@ public class Review {
     @Column(columnDefinition = "TEXT")
     private String imageUrl;
 
-
     @PrePersist
     protected void onCreate(){
         this.createdAt = LocalDateTime.now();

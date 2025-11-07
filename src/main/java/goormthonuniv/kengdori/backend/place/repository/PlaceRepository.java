@@ -2,6 +2,8 @@ package goormthonuniv.kengdori.backend.place.repository;
 
 import goormthonuniv.kengdori.backend.place.domain.Place;
 import goormthonuniv.kengdori.backend.user.domain.User;
+import java.math.BigDecimal;
+import java.util.List;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -30,4 +32,23 @@ public interface PlaceRepository extends JpaRepository<Place, Long> {
             @Param("hashtag") String hashtag,
             Pageable pageable
     );
+
+    @Query("""
+    SELECT DISTINCT p
+    FROM Review r
+    JOIN r.place p
+    JOIN FETCH p.placeHashtagList ph
+    JOIN FETCH ph.userHashtag uh
+    WHERE r.user.id = :userId
+      AND p.xCoordinate BETWEEN :minX AND :maxX
+      AND p.yCoordinate BETWEEN :minY AND :maxY
+    """)
+    List<Place> findPlacesWithUserReviewsInBoundary(
+            @Param("userId") Long userId,
+            @Param("minX") BigDecimal minX,
+            @Param("maxX") BigDecimal maxX,
+            @Param("minY") BigDecimal minY,
+            @Param("maxY") BigDecimal maxY
+    );
+
 }

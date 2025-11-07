@@ -3,11 +3,15 @@ package goormthonuniv.kengdori.backend.review.repository;
 import goormthonuniv.kengdori.backend.place.domain.Place;
 import goormthonuniv.kengdori.backend.review.domain.Review;
 import goormthonuniv.kengdori.backend.user.domain.User;
+import java.math.BigDecimal;
+import java.util.List;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 public interface ReviewRepository extends JpaRepository<Review, Long> {
 
@@ -17,4 +21,21 @@ public interface ReviewRepository extends JpaRepository<Review, Long> {
     Optional<Review> findById(Long id);
 
     Page<Review> findByPlaceAndUser(Place place, User user, Pageable pageable);
+
+    Optional<Review> findTopByPlaceOrderByCreatedAtDesc(Place place);
+
+    @Query("""
+    SELECT r
+    FROM Review r
+    JOIN FETCH r.place p
+    WHERE p.xCoordinate BETWEEN :minX AND :maxX
+      AND p.yCoordinate BETWEEN :minY AND :maxY
+    """)
+    List<Review> findAllByBoundary(
+            @Param("minX") BigDecimal minX,
+            @Param("maxX") BigDecimal maxX,
+            @Param("minY") BigDecimal minY,
+            @Param("maxY") BigDecimal maxY
+    );
+
 }
