@@ -3,7 +3,7 @@ package goormthonuniv.kengdori.backend.auth.controller;
 import goormthonuniv.kengdori.backend.auth.DTO.KakaoCallbackDTO;
 import goormthonuniv.kengdori.backend.auth.service.KakaoAuthService;
 import goormthonuniv.kengdori.backend.global.JWT.JwtUtil;
-import goormthonuniv.kengdori.backend.user.service.UserServiceImpl;
+import goormthonuniv.kengdori.backend.service.user.UserServiceImpl;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
