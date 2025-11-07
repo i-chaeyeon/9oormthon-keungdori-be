@@ -7,6 +7,7 @@ import goormthonuniv.kengdori.backend.place.service.PlaceService;
 import goormthonuniv.kengdori.backend.user.domain.User;
 import goormthonuniv.kengdori.backend.user.service.UserServiceImpl;
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -38,16 +39,17 @@ public class PlaceController {
     @GetMapping("/nearme")
     public ResponseEntity<BoundedPlaceListResponseDTO> getUserReviewedPlaces(
             @RequestHeader("Authorization") String authHeader,
-            @RequestParam BigDecimal minX,
-            @RequestParam BigDecimal maxX,
-            @RequestParam BigDecimal minY,
-            @RequestParam BigDecimal maxY,
-            @RequestParam BigDecimal currentX,
-            @RequestParam BigDecimal currentY
+            @RequestParam BigDecimal north,
+            @RequestParam BigDecimal south,
+            @RequestParam BigDecimal east,
+            @RequestParam BigDecimal west
 //            @RequestParam(defaultValue = "0") int page
     ) {
-        log.info("[nearme] authHeader={}, minX={}, maxX={}, minY={}, maxY={}, currentX={}, currentY={}",
-                authHeader, minX, maxX, minY, maxY, currentX, currentY);
+        BigDecimal currentX = west.add(east).divide(BigDecimal.valueOf(2), RoundingMode.HALF_UP);
+        BigDecimal currentY = south.add(north).divide(BigDecimal.valueOf(2), RoundingMode.HALF_UP);
+
+        log.info("[nearme] authHeader={}, west={}, east={}, south={}, north={}, currentX={}, currentY={}",
+                authHeader, west, east, south, north, currentX, currentY);
 
         User user = findUser(authHeader);
 
@@ -55,7 +57,7 @@ public class PlaceController {
 
         List<BoundedPlaceResponseDTO> places =
                 placeService.getReviewedPlacesInBoundary(
-                        user.getId(), minX, maxX, minY, maxY, currentX, currentY
+                        user.getId(), west, east, south, north, currentX, currentY
                 );
 
         log.info("[nearme] userId={}, place count={}", user.getId(), places.size());
