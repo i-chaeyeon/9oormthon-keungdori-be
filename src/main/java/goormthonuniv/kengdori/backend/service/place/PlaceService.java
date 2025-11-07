@@ -19,7 +19,7 @@ public class PlaceService {
     private final ReviewRepository reviewRepository;
 
     public Place findOrCreatePlace(Place place){
-        return placeRepository.findBygoogleId(place.getGoogleId())
+        return placeRepository.findByGoogleId(place.getGoogleId())
                 .orElseGet(() -> placeRepository.save(place));
     }
 

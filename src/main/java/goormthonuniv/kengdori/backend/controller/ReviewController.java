@@ -112,7 +112,7 @@ public class ReviewController {
         ReadResponseDTO<VisitedPlaceResponseDTO> response = new ReadResponseDTO<>(resultPage);
         return ResponseEntity.ok(response);
     }
-
+//
     ///  [3-3]
     @GetMapping("/place/{googleId}")
     public ResponseEntity<ReviewListByPlaceDTO> findMyReviewsByPlace(

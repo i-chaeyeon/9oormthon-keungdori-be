@@ -1,39 +1,27 @@
 package goormthonuniv.kengdori.backend.dto.review;
 
-import goormthonuniv.kengdori.backend.domain.review.Review;
-import goormthonuniv.kengdori.backend.dto.hashtag.HashtagInfoDTO;
 import lombok.Getter;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Getter
 public class ReviewListResponseDTO {
+
     private final Long reviewId;
     private final Double rating;
     private final String memo;
-    private final HashtagInfoDTO mainTag;
-    private final List<HashtagInfoDTO> subTags;
+    private final String mainTag;
+    private final List<String> subTags;
     private final String imageUrl;
 
-    public ReviewListResponseDTO(Review review) {
-        this.reviewId = review.getId();
-        this.rating = review.getRating();
-        this.memo = review.getMemo();
+    public ReviewListResponseDTO(Long reviewId, Double rating, String memo,
+                                 String mainTag, List<String> subTags, String imageUrl) {
 
-        List<PlaceHashtag> placeHashtags = review.getPlace().getPlaceHashtagList();
-
-        this.mainTag = placeHashtags.stream()
-                .filter(PlaceHashtag::getIsMain)
-                .map(ph -> new HashtagInfoDTO(ph.getUserHashtag()))
-                .findFirst()
-                .orElse(null);
-
-        this.subTags = placeHashtags.stream()
-                .filter(ph -> !ph.getIsMain())
-                .map(ph -> new HashtagInfoDTO(ph.getUserHashtag()))
-                .collect(Collectors.toList());
-
-        this.imageUrl = review.getImageUrl();
+        this.reviewId = reviewId;
+        this.rating = rating;
+        this.memo = memo;
+        this.mainTag = mainTag;
+        this.subTags = subTags;
+        this.imageUrl = imageUrl;
     }
 }

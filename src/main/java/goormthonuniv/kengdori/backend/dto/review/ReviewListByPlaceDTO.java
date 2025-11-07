@@ -2,14 +2,10 @@ package goormthonuniv.kengdori.backend.dto.review;
 
 import goormthonuniv.kengdori.backend.dto.place.PlaceInfoDTO;
 import goormthonuniv.kengdori.backend.domain.place.Place;
-import goormthonuniv.kengdori.backend.domain.review.Review;
 import goormthonuniv.kengdori.backend.global.DTO.PageInfoDTO;
 import lombok.Getter;
-import org.springframework.data.domain.Page;
 
-import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Getter
 public class ReviewListByPlaceDTO {
@@ -17,17 +13,9 @@ public class ReviewListByPlaceDTO {
     private final List<ReviewListResponseDTO> reviews;
     private final PageInfoDTO pageInfo;
 
-    public ReviewListByPlaceDTO(Place place, Page<Review> reviewPage) {
+    public ReviewListByPlaceDTO(Place place, List<ReviewListResponseDTO> reviews, PageInfoDTO pageInfo) {
         this.placeInfo = new PlaceInfoDTO(place);
-        this.reviews = reviewPage.getContent().stream()
-                .map(ReviewListResponseDTO::new)
-                .collect(Collectors.toList());
-        this.pageInfo = new PageInfoDTO(reviewPage);
-    }
-
-    public ReviewListByPlaceDTO(){
-        this.placeInfo = new PlaceInfoDTO();
-        this.reviews = Collections.emptyList();
-        this.pageInfo = new PageInfoDTO(Page.empty());
+        this.reviews = reviews;
+        this.pageInfo = pageInfo;
     }
 }

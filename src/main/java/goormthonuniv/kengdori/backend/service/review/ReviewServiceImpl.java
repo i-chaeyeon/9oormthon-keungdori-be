@@ -1,10 +1,16 @@
 package goormthonuniv.kengdori.backend.service.review;
 
+import goormthonuniv.kengdori.backend.domain.place.PlaceMainTag;
+import goormthonuniv.kengdori.backend.domain.place.PlaceMainTagRepository;
+import goormthonuniv.kengdori.backend.domain.review.ReviewHashtag;
+import goormthonuniv.kengdori.backend.domain.review.ReviewHashtagRepository;
 import goormthonuniv.kengdori.backend.dto.review.ReviewDetailsResponseDTO;
 import goormthonuniv.kengdori.backend.dto.review.ReviewListByPlaceDTO;
+import goormthonuniv.kengdori.backend.dto.review.ReviewListResponseDTO;
 import goormthonuniv.kengdori.backend.dto.review.ReviewRequestDTO;
 import goormthonuniv.kengdori.backend.dto.review.ReviewResponseDTO;
 import goormthonuniv.kengdori.backend.dto.review.ReviewUpdateRequestDTO;
+import goormthonuniv.kengdori.backend.global.DTO.PageInfoDTO;
 import goormthonuniv.kengdori.backend.global.exception.UnauthorizedException;
 import goormthonuniv.kengdori.backend.domain.hashtag.UserHashtag;
 import goormthonuniv.kengdori.backend.domain.hashtag.PlaceHashtagRepository;
@@ -15,6 +21,7 @@ import goormthonuniv.kengdori.backend.domain.review.Review;
 import goormthonuniv.kengdori.backend.domain.review.ReviewRepository;
 import goormthonuniv.kengdori.backend.domain.hashtag.UserHashtagRepository;
 import goormthonuniv.kengdori.backend.service.hashtag.HashtagService;
+import goormthonuniv.kengdori.backend.service.hashtag.UserHashtagService;
 import goormthonuniv.kengdori.backend.service.place.PlaceService;
 import goormthonuniv.kengdori.backend.domain.user.User;
 import jakarta.persistence.EntityNotFoundException;
@@ -39,130 +46,202 @@ import java.util.stream.Collectors;
 @Service
 public class ReviewServiceImpl implements ReviewService{
 
-    private final PlaceService placeService;
-    private final HashtagService hashtagService;
     private final PlaceRepository placeRepository;
     private final ReviewRepository reviewRepository;
-    private final PlaceHashtagRepository placeHashtagRepository;
     private final UserHashtagRepository userHashtagRepository;
+    private final ReviewHashtagRepository reviewHashtagRepository;
+    private final PlaceMainTagRepository placeMainTagRepository;
+    private final UserHashtagService userHashtagService;
 
     @Override
-    @Transactional
     public ReviewResponseDTO createReview(User user, ReviewRequestDTO dto) {
-        log.info("리뷰 생성 시도 - userId: {}, placeName: {}", user.getId(), dto.getPlaceName());
 
-        Place place = placeService.findOrCreatePlace(dto.toPlace());
+        log.info("리뷰 생성 시도 - userId: {}, place: {}", user.getId(), dto.getPlaceName());
 
-        placeHashtagRepository.deleteByPlaceAndUser(place, user);
-
-        List<String> subTags = dto.getSubTags() != null ? dto.getSubTags() : Collections.emptyList();
-
-        UserHashtag mainTag = null;
-        if (dto.getMainTag() != null) {
-            mainTag = hashtagService.findUserHashtag(user, dto.getMainTag());
-            PlaceHashtag mainRel = PlaceHashtag.builder()
-                    .place(place)
-                    .user(user)
-                    .userHashtag(mainTag)
-                    .isMain(true)
-                    .build();
-            placeHashtagRepository.save(mainRel);
-        }
-        List<PlaceHashtag> subRelList = subTags.stream()
-                .map(tag -> PlaceHashtag.builder()
-                        .place(place)
-                        .user(user)
-                        .userHashtag(hashtagService.findUserHashtag(user, tag))
-                        .isMain(false)
-                        .build())
-                .toList();
-        placeHashtagRepository.saveAll(subRelList);
+        Place place = placeRepository.findByGoogleId(dto.getGoogleId())
+                .orElseGet(() -> placeRepository.save(dto.toPlace()));
 
         Review review = Review.builder()
                 .user(user)
                 .place(place)
                 .rating(dto.getRating())
-                .imageUrl(dto.getImageUrl())
                 .memo(dto.getMemo())
+                .imageUrl(dto.getImageUrl())
                 .build();
         reviewRepository.save(review);
 
-        log.info("리뷰 생성 완료 - reviewId: {}, placeId: {}", review.getId(), place.getId());
+        if (dto.getSubTags() != null) {
+            for (String tagName : dto.getSubTags()) {
+                UserHashtag userTag = userHashtagRepository
+                        .findByUserAndHashtag(user, tagName)
+                        .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 해시태그: " + tagName));
 
-        return new ReviewResponseDTO(
-                place.getId(),
+                ReviewHashtag reviewHashtag = ReviewHashtag.builder()
+                        .review(review)
+                        .user(user)
+                        .userHashtag(userTag)
+                        .build();
+                reviewHashtagRepository.save(reviewHashtag);
+            }
+        }
+
+        if (dto.getMainTag() != null) {
+            UserHashtag mainTag = userHashtagRepository
+                    .findByUserAndHashtag(user, dto.getMainTag())
+                    .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 메인태그"));
+
+            // 기존 메인태그 있으면 삭제
+            placeMainTagRepository.deleteByPlaceAndUser(place, user);
+
+            placeMainTagRepository.save(
+                    PlaceMainTag.builder()
+                            .place(place)
+                            .user(user)
+                            .userHashtag(mainTag)
+                            .build()
+            );
+        }
+
+        log.info("리뷰 생성 완료 - reviewId: {}", review.getId());
+
+        return toReviewResponseDTO(review, user);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Page<VisitedPlaceResponseDTO> searchMyReviewedPlaces(
+            User user,
+            String keyword,
+            Pageable pageable
+    ) {
+
+        Page<Place> places = placeRepository.findPlacesByUserReviewAndKeyword(user, keyword, pageable);
+
+        return places.map(VisitedPlaceResponseDTO::new);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public ReviewListByPlaceDTO findMyReviewsByPlace(String googleId, User user, Pageable pageable) {
+
+        Place place = placeRepository.findByGoogleId(googleId)
+                .orElseThrow(() -> new IllegalArgumentException("해당 장소가 존재하지 않습니다."));
+
+        Page<Review> reviewPage = reviewRepository.findByPlaceAndUser(place, user, pageable);
+
+        List<ReviewListResponseDTO> reviewDTOs = reviewPage.getContent().stream()
+                .map(review -> toReviewListResponseDTO(review, user))
+                .toList();
+
+        return new ReviewListByPlaceDTO(place, reviewDTOs, new PageInfoDTO(reviewPage));
+    }
+
+    private ReviewListResponseDTO toReviewListResponseDTO(Review review, User user) {
+
+        String mainTag = placeMainTagRepository.findByPlaceAndUser(review.getPlace(), user)
+                .map(pmt -> pmt.getUserHashtag().getHashtag())
+                .orElse(null);
+
+        List<String> subTags = reviewHashtagRepository.findByReviewAndUser(review, user).stream()
+                .map(rh -> rh.getUserHashtag().getHashtag())
+                .filter(tag -> !tag.equals(mainTag))  // 메인태그는 제외
+                .toList();
+
+        return new ReviewListResponseDTO(
                 review.getId(),
-                place.getName(),
                 review.getRating(),
-                mainTag != null ? mainTag.getHashtag() : null,
-                subTags,
-                review.getImageUrl(),
                 review.getMemo(),
-                review.getCreatedAt()
+                mainTag,
+                subTags,
+                review.getImageUrl()
         );
     }
 
+    @Override
+    @Transactional(readOnly = true)
+    public ReviewDetailsResponseDTO getReviewDetailsForUser(Long reviewId, User user) {
+
+        // 리뷰 존재 여부
+        Review review = reviewRepository.findById(reviewId)
+                .orElseThrow(() -> new EntityNotFoundException("Review not found"));
+
+        Place place = review.getPlace();
+
+        PlaceMainTag mainTag = placeMainTagRepository
+                .findByPlaceAndUser(place, user)
+                .orElse(null);
+
+        List<ReviewHashtag> subTags = reviewHashtagRepository
+                .findByReviewAndUser(review, user);
+
+        // 4. DTO로 변환해서 반환
+        return new ReviewDetailsResponseDTO(review, mainTag, subTags);
+    }
 
     @Override
     @Transactional
     public ReviewResponseDTO updateReview(User user, Long reviewId, ReviewUpdateRequestDTO dto) {
 
-        log.info("리뷰 수정 시도 - reviewId: {}, userId: {}", reviewId, user.getId());
-
         Review review = reviewRepository.findById(reviewId)
                 .orElseThrow(() -> new EntityNotFoundException("Review not found"));
 
+
         review.setRating(dto.getRating());
-        review.setImageUrl(dto.getImageUrl());
         review.setMemo(dto.getMemo());
+        review.setImageUrl(dto.getImageUrl());
 
         Place place = review.getPlace();
 
-        placeHashtagRepository.deleteByPlaceAndUser(place, user);
+        if (dto.getMainTag() != null) {
+            placeMainTagRepository.deleteByPlaceAndUser(place, user);
 
-        List<String> subTags = dto.getSubTags() != null ? dto.getSubTags() : new ArrayList<>();
-        String mainTagStr = dto.getMainTag();
-
-        List<String> allTags = new ArrayList<>(subTags);
-        if (mainTagStr != null) allTags.add(mainTagStr);
-        allTags = allTags.stream().filter(Objects::nonNull).toList();
-
-        List<UserHashtag> foundHashtags = userHashtagRepository.findByUserAndHashtagIn(user, allTags);
-        if (foundHashtags.size() != allTags.stream().distinct().count()) {
-            throw new EntityNotFoundException("존재하지 않는 해시태그가 포함되어 있습니다.");
+            if (!dto.getMainTag().isBlank()) {
+                UserHashtag main = userHashtagService.findOrCreate(user, dto.getMainTag());
+                placeMainTagRepository.save(
+                        PlaceMainTag.builder()
+                                .place(place)
+                                .user(user)
+                                .userHashtag(main)
+                                .build()
+                );
+            }
         }
 
-        Map<String, UserHashtag> hashtagMap = foundHashtags.stream()
-                .collect(Collectors.toMap(UserHashtag::getHashtag, tag -> tag));
+        reviewHashtagRepository.deleteByReviewAndUser(review, user);
 
-        if (mainTagStr != null) {
-            PlaceHashtag mainRel = PlaceHashtag.builder()
-                    .place(place)
-                    .user(user)
-                    .userHashtag(hashtagMap.get(mainTagStr))
-                    .isMain(true)
-                    .build();
-            placeHashtagRepository.save(mainRel);
+        if (dto.getSubTags() != null) {
+            for (String tag : dto.getSubTags()) {
+                UserHashtag sub = userHashtagService.findOrCreate(user, tag);
+                reviewHashtagRepository.save(
+                        ReviewHashtag.builder()
+                                .review(review)
+                                .user(user)
+                                .userHashtag(sub)
+                                .build()
+                );
+            }
         }
 
-        List<PlaceHashtag> subRelList = subTags.stream()
-                .map(tagStr -> PlaceHashtag.builder()
-                        .place(place)
-                        .user(user)
-                        .userHashtag(hashtagMap.get(tagStr))
-                        .isMain(false)
-                        .build())
+        return toReviewResponseDTO(review, user);
+    }
+
+    private ReviewResponseDTO toReviewResponseDTO(Review review, User user) {
+        Place place = review.getPlace();
+
+        String mainTag = placeMainTagRepository.findByPlaceAndUser(place, user)
+                .map(pmt -> pmt.getUserHashtag().getHashtag())
+                .orElse(null);
+
+        List<String> subTags = review.getHashtags().stream()
+                .map(rh -> rh.getUserHashtag().getHashtag())
                 .toList();
-        placeHashtagRepository.saveAll(subRelList);
-
-        log.info("리뷰 수정 완료 - reviewId: {}", reviewId);
 
         return new ReviewResponseDTO(
                 place.getId(),
                 review.getId(),
                 place.getName(),
                 review.getRating(),
-                mainTagStr,
+                mainTag,
                 subTags,
                 review.getImageUrl(),
                 review.getMemo(),
@@ -174,82 +253,32 @@ public class ReviewServiceImpl implements ReviewService{
     @Transactional
     public void deleteReview(User user, Long reviewId) {
 
-        log.info("리뷰 삭제 시도 - reviewId: {}, userId: {}", reviewId, user.getId());
-
         Review review = reviewRepository.findById(reviewId)
-                .orElseThrow(() -> new EntityNotFoundException("Review not found"));
-
-        Place place = review.getPlace();
-
-        log.info("리뷰에 연결된 해시태그 삭제 - placeId: {}, userId: {}", place.getId(), user.getId());
-        placeHashtagRepository.deleteByPlaceAndUser(place, user);
-
-        log.info("리뷰 엔티티 삭제 - reviewId: {}", reviewId);
-        reviewRepository.delete(review);
-
-        log.info("리뷰 삭제 완료 - reviewId: {}", reviewId);
-    }
-
-
-    @Override
-    public Page<VisitedPlaceResponseDTO> searchMyReviewedPlaces(User user, String keyword, Pageable pageable) {
-        log.info("리뷰 장소 검색 시도 - userId: {}, keyword: {}", user.getId(), keyword);
-
-        Page<Place> places = placeRepository.findPlacesByUserReviewAndKeyword(user, keyword, pageable);
-
-        log.info("검색 완료 - 장소 총 {}개", places.getTotalElements());
-
-        return places.map(VisitedPlaceResponseDTO::new);
-    }
-
-    @Override
-    public Page<VisitedPlaceResponseDTO> findPlacesByHashtag(String hashtag, Pageable pageable) {
-
-        log.info("해시태그 검색 - hashtag: {}", hashtag);
-
-        Page<Place> places = placeRepository.findByHashtag(hashtag, pageable);
-
-        log.info("해시태그 검색 완료 - 장소 총 {}개", places.getTotalElements());
-
-        return places.map(VisitedPlaceResponseDTO::new);
-    }
-
-    @Override
-    public ReviewListByPlaceDTO findMyReviewsByPlace(String googleId, User user, Pageable pageable){
-
-        Optional<Place> optionalPlace = placeRepository.findBygoogleId(googleId);
-
-        if (optionalPlace.isEmpty()) {
-            log.info("요청한 장소를 찾을 수 없습니다. googleId: {}. 빈 리뷰 목록을 반환합니다.", googleId);
-            return new ReviewListByPlaceDTO();
-        }
-
-        Place place = optionalPlace.get();
-        log.info("장소의 리뷰 목록 불러오기 - 장소명: {}", place.getName());
-
-        Page<Review> reviewPage = reviewRepository.findByPlaceAndUser(place, user, pageable);
-        log.info("장소의 리뷰 목록 조회 완료 - 리뷰 총 {}개", reviewPage.getTotalElements());
-
-        return new ReviewListByPlaceDTO(place, reviewPage);
-    }
-
-    @Override
-    public ReviewDetailsResponseDTO getReviewDetailsForUser(Long reviewId, User user) {
-
-        log.info("특정 리뷰의 상세보기 시작 - 리뷰 아이디: {}", reviewId);
-
-        Review review = reviewRepository.findWithUserAndPlaceAndHashtagsById(reviewId)
-                .orElseThrow(() -> new EntityNotFoundException("해당 리뷰 없음. 아이디: " + reviewId));
+                .orElseThrow(() -> new EntityNotFoundException("존재하지 않는 리뷰입니다. id=" + reviewId));
 
         if (!review.getUser().getId().equals(user.getId())) {
-            throw new UnauthorizedException("리뷰를 조회할 권한이 없습니다.");
+            throw new UnauthorizedException("본인의 리뷰만 삭제할 수 있습니다.");
         }
 
-        return new ReviewDetailsResponseDTO(review);
+        reviewRepository.delete(review);
+
+        log.info("리뷰 삭제 완료 - reviewId: {}, userId: {}", reviewId, user.getId());
     }
 
+    @Override
+    @Transactional(readOnly = true)
+    public Page<VisitedPlaceResponseDTO> findPlacesByHashtag(String hashtag, Pageable pageable) {
+        Page<Place> placePage = placeRepository.findPlacesByHashtag(hashtag, pageable);
+        return placePage.map(VisitedPlaceResponseDTO::new);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
     public boolean hasReviewWithin2Weeks(Long userId) {
+
         LocalDateTime twoWeeksAgo = LocalDateTime.now().minusWeeks(2);
+
         return reviewRepository.existsByUserIdAndCreatedAtAfter(userId, twoWeeksAgo);
     }
+
 }
