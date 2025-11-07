@@ -27,17 +27,17 @@ public class HashtagService {
             Map.entry("#ff953e", "#ffffff"),
             Map.entry("#ffc639", "#ffffff"),
             Map.entry("#fff272", "#ff5e2d"), // 컬러칩 2번째 줄
-            Map.entry("#35a23a" , "#ffffff"),
-            Map.entry("#88dd00" , "#14479e"),
+            Map.entry("#57b75b" , "#ffffff"),
+            Map.entry("#a3e23d" , "#14479e"),
             Map.entry("#8dd7b0" , "#14479e"),
-            Map.entry("#c0f5d6" , "#35a23a"), // 컬러칩 3번째 줄
+            Map.entry("#d7ff97" , "#57b75b"), // 컬러칩 3번째 줄
             Map.entry("#14479e" , "#ffffff"),
             Map.entry("#b83aff" , "#ffffff"),
-            Map.entry("#42aedc" , "#ffffff"),
+            Map.entry("#7cd8ff" , "#14479e"),
             Map.entry("#b4d8ed" , "#14479e"), // 컬러칩 4번째 줄
-            Map.entry("#000000" , "#ffffff"),
-            Map.entry("#6a3906" , "#ffffff"),
-            Map.entry("#c5711a" , "#ffffff"),
+            Map.entry("#854343" , "#ffffff"),
+            Map.entry("#d05953" , "#ffffff"),
+            Map.entry("#d17619" , "#ffffff"),
             Map.entry("#adadad" , "#ffffff"), // 컬러칩 5번째 줄 - 이하 디버깅 용 임시 맵
             Map.entry("#b71c1c", "#ffffff"),
             Map.entry("#880e4f", "#ffffff")
