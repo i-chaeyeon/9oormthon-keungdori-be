@@ -190,41 +190,46 @@ public class ReviewServiceImpl implements ReviewService{
         Review review = reviewRepository.findById(reviewId)
                 .orElseThrow(() -> new EntityNotFoundException("Review not found"));
 
-
+        log.info("start to update review");
         review.setRating(dto.getRating());
         review.setMemo(dto.getMemo());
         review.setImageUrl(dto.getImageUrl());
+        log.info("review set done");
 
         Place place = review.getPlace();
 
-        if (dto.getMainTag() != null) {
-            placeMainTagRepository.deleteByPlaceAndUser(place, user);
-
-            if (!dto.getMainTag().isBlank()) {
-                UserHashtag main = userHashtagService.findOrCreate(user, dto.getMainTag());
-                placeMainTagRepository.save(
-                        PlaceMainTag.builder()
-                                .place(place)
-                                .user(user)
-                                .userHashtag(main)
-                                .build()
-                );
-            }
-        }
+        log.info("found place");
 
         reviewHashtagRepository.deleteByReviewAndUser(review, user);
 
+        if (dto.getMainTag() != null) {
+            UserHashtag mainTag = userHashtagRepository
+                    .findByUserAndHashtag(user, dto.getMainTag())
+                    .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 메인태그"));
+
+            placeMainTagRepository.deleteByPlaceAndUser(place, user);
+
+            placeMainTagRepository.save(
+                    PlaceMainTag.builder()
+                            .place(place)
+                            .user(user)
+                            .userHashtag(mainTag)
+                            .build()
+            );
+        }
+
         if (dto.getSubTags() != null) {
-            for (String tag : dto.getSubTags()) {
-                UserHashtag sub = userHashtagService.findOrCreate(user, tag);
-                reviewHashtagRepository.save(
-                        ReviewHashtag.builder()
-                                .review(review)
-                                .user(user)
-                                .userHashtag(sub)
-                                .isMain(false)
-                                .build()
-                );
+            for (String tagName : dto.getSubTags()) {
+                UserHashtag userTag = userHashtagRepository
+                        .findByUserAndHashtag(user, tagName)
+                        .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 해시태그: " + tagName));
+
+                reviewHashtagRepository.save(ReviewHashtag.builder()
+                        .review(review)
+                        .user(user)
+                        .userHashtag(userTag)
+                        .isMain(false)
+                        .build());
             }
         }
 
