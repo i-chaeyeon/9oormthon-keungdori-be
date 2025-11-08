@@ -42,8 +42,9 @@ public class Review {
     private String imageUrl;
 
     @Builder.Default
-    @OneToMany(mappedBy = "review", cascade = CascadeType.REMOVE)
+    @OneToMany(mappedBy = "review", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<ReviewHashtag> hashtags = new ArrayList<>();
+
 
     @PrePersist
     protected void onCreate(){

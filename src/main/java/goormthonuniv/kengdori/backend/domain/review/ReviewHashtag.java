@@ -7,15 +7,7 @@ import jakarta.persistence.*;
 import lombok.*;
 
 @Entity
-@Table(
-        name = "review_hashtag",
-        uniqueConstraints = {
-                @UniqueConstraint(
-                        name = "uk_review_user_main",
-                        columnNames = {"review_id", "user_id", "is_main"}
-                )
-        }
-)
+@Table(name = "review_hashtag")
 @Getter @Setter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor @Builder

@@ -24,5 +24,7 @@ public interface ReviewHashtagRepository extends JpaRepository<ReviewHashtag, Lo
     List<ReviewHashtag> findByPlaceAndUser(@Param("place") Place place, @Param("user") User user);
 
     void deleteByReviewAndUserAndUserHashtag(Review review, User user, UserHashtag userHashtag);
+    List<ReviewHashtag> findByReviewAndUserAndIsMain(Review review, User user, boolean isMain);
+
 
 }

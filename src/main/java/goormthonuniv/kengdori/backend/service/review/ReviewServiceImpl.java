@@ -64,20 +64,22 @@ public class ReviewServiceImpl implements ReviewService{
 
         log.info("dto subtag {}, dto maintag: {}", dto.getSubTags(), dto.getMainTag());
 
+        reviewHashtagRepository.deleteByReviewAndUser(review, user);
+
+        log.info("dto subtag {}, dto maintag: {}", dto.getSubTags(), dto.getMainTag());
+
         if (dto.getSubTags() != null) {
             for (String tagName : dto.getSubTags()) {
                 UserHashtag userTag = userHashtagRepository
                         .findByUserAndHashtag(user, tagName)
                         .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 해시태그: " + tagName));
 
-                ReviewHashtag reviewHashtag = ReviewHashtag.builder()
+                reviewHashtagRepository.save(ReviewHashtag.builder()
                         .review(review)
                         .user(user)
                         .userHashtag(userTag)
                         .isMain(false)
-                        .build();
-                reviewHashtagRepository.save(reviewHashtag);
-                review.getHashtags().add(reviewHashtag);
+                        .build());
             }
         }
 
@@ -86,7 +88,6 @@ public class ReviewServiceImpl implements ReviewService{
                     .findByUserAndHashtag(user, dto.getMainTag())
                     .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 메인태그"));
 
-            // 기존 메인태그 있으면 삭제
             placeMainTagRepository.deleteByPlaceAndUser(place, user);
 
             placeMainTagRepository.save(
@@ -97,6 +98,7 @@ public class ReviewServiceImpl implements ReviewService{
                             .build()
             );
         }
+
 
         log.info("리뷰 생성 완료 - reviewId: {}", review.getId());
 
@@ -236,10 +238,12 @@ public class ReviewServiceImpl implements ReviewService{
                 .map(pmt -> pmt.getUserHashtag().getHashtag())
                 .orElse(null);
 
-        List<String> subTags = review.getHashtags().stream()
-                .filter(rh -> Boolean.FALSE.equals(rh.getIsMain()))
+        List<String> subTags = reviewHashtagRepository
+                .findByReviewAndUserAndIsMain(review, user, false)
+                .stream()
                 .map(rh -> rh.getUserHashtag().getHashtag())
                 .toList();
+
 
         return new ReviewResponseDTO(
                 place.getId(),
