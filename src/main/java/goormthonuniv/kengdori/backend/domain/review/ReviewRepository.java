@@ -50,4 +50,6 @@ public interface ReviewRepository extends JpaRepository<Review, Long> {
     );
 
     boolean existsByUserIdAndCreatedAtAfter(Long userId, LocalDateTime dateTime);
+    Review findTopByPlaceAndUserOrderByCreatedAtDesc(Place place, User user);
+
 }

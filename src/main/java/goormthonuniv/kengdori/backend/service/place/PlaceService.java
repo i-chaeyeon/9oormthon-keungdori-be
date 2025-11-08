@@ -2,6 +2,7 @@ package goormthonuniv.kengdori.backend.service.place;
 
 import goormthonuniv.kengdori.backend.domain.place.PlaceMainTag;
 import goormthonuniv.kengdori.backend.domain.place.PlaceMainTagRepository;
+import goormthonuniv.kengdori.backend.domain.review.Review;
 import goormthonuniv.kengdori.backend.domain.review.ReviewHashtag;
 import goormthonuniv.kengdori.backend.domain.review.ReviewHashtagRepository;
 import goormthonuniv.kengdori.backend.domain.user.User;
@@ -55,13 +56,20 @@ public class PlaceService {
                             currentY, currentX
                     );
                     PlaceMainTag mainTag = placeMainTagRepository.findByPlaceAndUser(place, user).orElse(null);
-                    log.info("Place: {}, mainTag: {}", place.getName(), mainTag);
-
                     List<ReviewHashtag> subTags = reviewHashtagRepository.findByPlaceAndUser(place, user);
-                    log.info("SubTags 개수: {}", subTags.size());
 
+                    Review latestReview = reviewRepository
+                            .findTopByPlaceAndUserOrderByCreatedAtDesc(place, user);
 
-                    return new BoundedPlaceResponseDTO(place, distance, mainTag, subTags);
+                    String latestImageUrl = (latestReview != null) ? latestReview.getImageUrl() : null;
+
+                    return new BoundedPlaceResponseDTO(
+                            place,
+                            distance,
+                            mainTag,
+                            subTags,
+                            latestImageUrl
+                    );
                 })
                 .sorted(Comparator.comparing(BoundedPlaceResponseDTO::getDistance))
                 .collect(Collectors.toList());
