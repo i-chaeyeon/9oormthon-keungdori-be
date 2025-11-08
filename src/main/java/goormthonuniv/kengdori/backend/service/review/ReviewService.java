@@ -1,5 +1,7 @@
 package goormthonuniv.kengdori.backend.service.review;
 
+import goormthonuniv.kengdori.backend.domain.hashtag.UserHashtag;
+import goormthonuniv.kengdori.backend.domain.review.Review;
 import goormthonuniv.kengdori.backend.domain.user.User;
 import goormthonuniv.kengdori.backend.dto.place.VisitedPlaceResponseDTO;
 import goormthonuniv.kengdori.backend.dto.review.*;
@@ -30,4 +32,7 @@ public interface ReviewService {
     boolean hasReviewWithin2Weeks(Long userId);
 
     Page<VisitedPlaceResponseDTO> findPlacesByHashtag(String hashtag, Pageable pageable);
+
+    void deleteSubTag(Long reviewId, User user, String tagName);
+    void deleteMainTag(Long placeId, User user);
 }

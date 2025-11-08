@@ -17,4 +17,5 @@ public interface PlaceMainTagRepository extends JpaRepository<PlaceMainTag, Long
     @Modifying
     @Query("DELETE FROM PlaceMainTag p WHERE p.place = :place AND p.user = :user")
     void deleteByPlaceAndUser(@Param("place") Place place, @Param("user") User user);
+
 }

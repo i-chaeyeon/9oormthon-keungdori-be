@@ -22,4 +22,7 @@ public interface ReviewHashtagRepository extends JpaRepository<ReviewHashtag, Lo
 
     @Query("SELECT rh FROM ReviewHashtag rh WHERE rh.review.place = :place AND rh.user = :user")
     List<ReviewHashtag> findByPlaceAndUser(@Param("place") Place place, @Param("user") User user);
+
+    void deleteByReviewAndUserAndUserHashtag(Review review, User user, UserHashtag userHashtag);
+
 }

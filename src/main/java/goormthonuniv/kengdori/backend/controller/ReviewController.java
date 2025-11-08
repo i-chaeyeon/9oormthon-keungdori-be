@@ -150,4 +150,25 @@ public class ReviewController {
                 "hasReview", reviewService.hasReviewWithin2Weeks(user.getId())
         ));
     }
+
+    @DeleteMapping("/{reviewId}/subtag")
+    public ResponseEntity<Void> deleteSubTag(
+            @RequestHeader("Authorization") String authHeader,
+            @PathVariable Long reviewId,
+            @RequestParam String tagName
+    ) {
+        User user = findUser(authHeader);
+        reviewService.deleteSubTag(reviewId, user, tagName);
+        return ResponseEntity.noContent().build(); // 204 반환
+    }
+
+    @DeleteMapping("/places/{placeId}/maintag")
+    public ResponseEntity<Void> deleteMainTag(
+            @RequestHeader("Authorization") String authHeader,
+            @PathVariable Long placeId
+    ){
+        User user = findUser(authHeader);
+        reviewService.deleteMainTag(placeId, user);
+        return ResponseEntity.noContent().build();
+    }
 }

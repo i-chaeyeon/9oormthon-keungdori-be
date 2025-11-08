@@ -286,4 +286,26 @@ public class ReviewServiceImpl implements ReviewService{
         return reviewRepository.existsByUserIdAndCreatedAtAfter(userId, twoWeeksAgo);
     }
 
+    @Override
+    @Transactional
+    public void deleteSubTag(Long reviewId, User user, String tagName) {
+        Review review = reviewRepository.findById(reviewId)
+                .orElseThrow(() -> new IllegalArgumentException("리뷰가 존재하지 않습니다."));
+
+        UserHashtag userTag = userHashtagRepository.findByUserAndHashtag(user, tagName)
+                .orElseThrow(() -> new IllegalArgumentException("사용자 해시태그가 존재하지 않습니다."));
+
+        reviewHashtagRepository.deleteByReviewAndUserAndUserHashtag(review, user, userTag);
+    }
+
+    @Override
+    @Transactional
+    public void deleteMainTag(Long placeId, User user) {
+        Place place = placeRepository.findById(placeId)
+                .orElseThrow(() -> new IllegalArgumentException("장소가 존재하지 않습니다."));
+
+        placeMainTagRepository.deleteByPlaceAndUser(place, user);
+    }
+
+
 }
