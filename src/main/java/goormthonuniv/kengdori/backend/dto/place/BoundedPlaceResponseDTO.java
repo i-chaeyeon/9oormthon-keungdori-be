@@ -23,7 +23,7 @@ public class BoundedPlaceResponseDTO {
     private final List<HashtagInfoDTO> subTags;
     private final double distance;
 
-    private final String latestImageUrl;
+    private final String imageUrl;
 
     public BoundedPlaceResponseDTO(
             Place place,
@@ -38,7 +38,7 @@ public class BoundedPlaceResponseDTO {
         this.xCoordinate = place.getXCoordinate();
         this.yCoordinate = place.getYCoordinate();
         this.distance = distance;
-        this.latestImageUrl = latestImageUrl;
+        this.imageUrl = latestImageUrl;
 
         this.mainTag = (mainTagEntity != null)
                 ? new HashtagInfoDTO(mainTagEntity.getUserHashtag())
